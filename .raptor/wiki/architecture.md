@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.385Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.611Z
 sources: 
   - package.json
   - bin/raptor.js
@@ -38,4 +38,5 @@ Raptor inferred the architecture from local source files, package metadata, entr
 ## Related Pages
 
 - [Project Overview](overview.md)
+- [Workspaces](workspaces.md)
 - [Symbols](symbols.md)

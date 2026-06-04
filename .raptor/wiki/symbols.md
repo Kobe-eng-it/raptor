@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.411Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.650Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -10,6 +10,7 @@ sources:
   - src/symbols.js
   - src/util.js
   - src/wiki.js
+  - src/workspaces.js
   - src/write.js
   - test/wiki.test.js
 source_hashes: 
@@ -19,9 +20,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 4be74a0d8843116f
+  src/wiki.js: 3d1ae09c29189bb8
+  src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 650db79002e3b5ec
+  test/wiki.test.js: 6d1ac8f66c8d7eef
 confidence: medium
 ---
 
@@ -102,6 +104,11 @@ confidence: medium
 - `writePage` (function)
 - `buildContext` (function)
 - `makeMeta` (function)
+- `sourceLink` (function)
+- `workspaceLabel` (function)
+- `workspaceSummary` (function)
+- `renderWorkspaces` (function)
+- `renderWorkspaceEntrypoints` (function)
 - `createPages` (function)
 - `pageTitle` (function)
 - `createChunks` (function)
@@ -124,6 +131,30 @@ confidence: medium
 - `wiki` (function)
 - `module.exports` (commonjs-export)
 
+### src/workspaces.js
+
+- `slash` (function)
+- `rel` (function)
+- `dirOf` (function)
+- `joinRel` (function)
+- `existsRel` (function)
+- `readPackageJson` (function)
+- `readGoModuleName` (function)
+- `readPyProjectName` (function)
+- `addEntrypoint` (function)
+- `addSkipped` (function)
+- `normalizeExportValue` (function)
+- `stripRelativePrefix` (function)
+- `detectPackageEntrypoints` (function)
+- `candidatesFromScript` (function)
+- `detectFrontendEntrypoints` (function)
+- `detectPythonEntrypoints` (function)
+- `detectGoEntrypoints` (function)
+- `languageForManifest` (function)
+- `hydrateWorkspace` (function)
+- `discoverWorkspaces` (function)
+- `module.exports` (commonjs-export)
+
 ### src/write.js
 
 - `mergeContent` (function)
@@ -135,6 +166,7 @@ confidence: medium
 ### test/wiki.test.js
 
 - `tempRepo` (function)
+- `nestedFrontendRepo` (function)
 - `capture` (function)
 - `main` (commonjs-export)
 - `extra` (commonjs-export)

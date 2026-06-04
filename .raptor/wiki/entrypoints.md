@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.399Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.640Z
 sources: 
   - bin/raptor.js
 source_hashes: 
@@ -13,7 +13,9 @@ confidence: high
 
 ## Detected Entrypoints
 
-- [bin/raptor.js](../../bin/raptor.js)
+### .
+
+- [bin/raptor.js](../../bin/raptor.js) (cli, package.bin) - package.json bin points to bin/raptor.js
 
 ## Notes
 

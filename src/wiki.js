@@ -14,6 +14,7 @@ const {
 } = require('./util');
 const { getHeadCommit } = require('./git');
 const { extractSymbols, isSymbolFile } = require('./symbols');
+const { discoverWorkspaces } = require('./workspaces');
 
 const SCHEMA_VERSION = 'v0.1.0';
 const WIKI_DIR = path.join('.raptor', 'wiki');
@@ -143,6 +144,7 @@ function buildContext(rootPath) {
   const languages = detectLanguages(files, rootPath);
   const framework = detectFramework(rootPath);
   const entryPoints = getEntryPoints(files, rootPath);
+  const workspaceAnalysis = discoverWorkspaces(files, rootPath);
   const symbolFiles = files.filter(isSymbolFile).slice(0, 250);
   const symbolRows = [];
   const symbolMap = {};
@@ -165,6 +167,8 @@ function buildContext(rootPath) {
     languages,
     framework,
     entryPoints,
+    workspaces: workspaceAnalysis.workspaces,
+    workspaceWarnings: workspaceAnalysis.warnings,
     symbolRows,
     symbolMap,
     sourceCommit: getHeadCommit(rootPath) || 'unknown',
@@ -182,6 +186,68 @@ function makeMeta(context, sources, confidence = 'medium') {
   };
 }
 
+function sourceLink(source) {
+  return `[${source}](../../${source})`;
+}
+
+function workspaceLabel(workspace) {
+  return workspace.root || '.';
+}
+
+function workspaceSummary(workspaces) {
+  const nested = workspaces.filter(workspace => workspace.root);
+  if (!nested.length) return 'Only the root workspace was analyzed.';
+  return `Detected ${workspaces.length} workspace(s), including ${nested.length} nested workspace(s).`;
+}
+
+function renderWorkspaces(workspaces) {
+  if (!workspaces.length) return 'No workspaces detected.';
+  return workspaces.map(workspace => {
+    const lines = [
+      `### ${workspaceLabel(workspace)}`,
+      '',
+      `- Manifest: ${workspace.manifest ? sourceLink(workspace.manifest) : 'None detected.'}`,
+      `- Type: ${workspace.manifestType}`,
+      `- Name: ${workspace.name || 'unknown'}`,
+      `- Language: ${workspace.language || 'unknown'}`,
+      '',
+      '#### Entrypoints',
+      '',
+      markdownList(workspace.entrypoints.map(entry => `${sourceLink(entry.path)} (${entry.kind}, ${entry.source}) - ${entry.reason}`)),
+    ];
+    if (workspace.warnings.length) {
+      lines.push('', '#### Warnings', '', markdownList(workspace.warnings));
+    }
+    if (workspace.skippedEntrypoints.length) {
+      lines.push('', '#### Skipped References', '', markdownList(workspace.skippedEntrypoints.map(entry => `${entry.path} (${entry.source}) - ${entry.reason}`)));
+    }
+    return lines.join('\n');
+  }).join('\n\n');
+}
+
+function renderWorkspaceEntrypoints(workspaces, legacyEntryPoints = []) {
+  const sections = workspaces.map(workspace => {
+    const lines = [
+      `### ${workspaceLabel(workspace)}`,
+      '',
+      markdownList(workspace.entrypoints.map(entry => `${sourceLink(entry.path)} (${entry.kind}, ${entry.source}) - ${entry.reason}`)),
+    ];
+    return lines.join('\n');
+  });
+
+  const workspaceEntrypoints = new Set(workspaces.flatMap(workspace => workspace.entrypoints.map(entry => entry.path)));
+  const legacyOnly = legacyEntryPoints.filter(entry => !workspaceEntrypoints.has(entry));
+  if (legacyOnly.length) {
+    sections.push([
+      '### Legacy Detection',
+      '',
+      markdownList(legacyOnly.map(entry => `${sourceLink(entry)} (legacy helper)`)),
+    ].join('\n'));
+  }
+
+  return sections.length ? sections.join('\n\n') : 'None detected.';
+}
+
 function createPages(context) {
   const packageSources = ['package.json', 'go.mod', 'Cargo.toml', 'pyproject.toml', 'setup.py']
     .filter(source => fs.existsSync(path.join(context.rootPath, source)));
@@ -189,6 +255,12 @@ function createPages(context) {
   const docsSources = context.relFiles.filter(file => /^docs\/.*\.md$/i.test(file)).slice(0, 50);
   const symbolSources = Object.keys(context.symbolMap).slice(0, 100);
   const entrySources = context.entryPoints.filter(source => fs.existsSync(path.join(context.rootPath, source)));
+  const workspaceEntrySources = [...new Set(context.workspaces.flatMap(workspace => workspace.entrypoints.map(entry => entry.path)))];
+  const allEntrySources = [...new Set([...workspaceEntrySources, ...entrySources])];
+  const workspaceSources = [...new Set(context.workspaces.flatMap(workspace => [
+    workspace.manifest,
+    ...workspace.entrypoints.map(entry => entry.path),
+  ]).filter(Boolean))];
 
   const languageLines = context.languages.map(lang => `${lang.name}: ${lang.files} files (${lang.percentage}%)`);
   const topDirs = [...new Set(context.relFiles.map(file => file.split('/')[0]).filter(Boolean))]
@@ -226,7 +298,7 @@ ${markdownList([...packageSources, ...readmeSources].map(source => `[${source}](
     },
     {
       filename: 'architecture.md',
-      sources: [...packageSources, ...entrySources],
+      sources: [...packageSources, ...allEntrySources],
       confidence: 'medium',
       body: `# Architecture
 
@@ -245,17 +317,41 @@ Raptor inferred the architecture from local source files, package metadata, entr
 ## Related Pages
 
 - [Project Overview](overview.md)
+- [Workspaces](workspaces.md)
 - [Symbols](symbols.md)`,
     },
     {
+      filename: 'workspaces.md',
+      sources: workspaceSources,
+      confidence: context.workspaces.length ? 'medium' : 'low',
+      body: `# Workspaces
+
+## Summary
+
+${workspaceSummary(context.workspaces)}
+
+## Detected Workspaces
+
+${renderWorkspaces(context.workspaces)}
+
+## Build Warnings
+
+${markdownList(context.workspaceWarnings)}
+
+## Related Pages
+
+- [Entrypoints](entrypoints.md)
+- [Architecture](architecture.md)`,
+    },
+    {
       filename: 'entrypoints.md',
-      sources: entrySources,
-      confidence: entrySources.length ? 'high' : 'low',
+      sources: allEntrySources,
+      confidence: allEntrySources.length ? 'high' : 'low',
       body: `# Entrypoints
 
 ## Detected Entrypoints
 
-${markdownList(context.entryPoints.map(entry => `[${entry}](../../${entry})`))}
+${renderWorkspaceEntrypoints(context.workspaces, context.entryPoints)}
 
 ## Notes
 
@@ -595,6 +691,7 @@ function query(argv) {
   }
 
   const terms = tokenize(question);
+  const launchTerms = new Set(['workspace', 'workspaces', 'frontend', 'backend', 'app', 'entrypoint', 'entrypoints', 'start', 'startup', 'dev', 'serve']);
   const chunks = loadJsonl(chunksPath);
   const symbols = loadJsonl(path.join(targetPath, INDEX_DIR, 'symbols.jsonl'));
   const symbolHits = symbols.filter(symbol => terms.some(term => symbol.name.toLowerCase().includes(term) || symbol.path.toLowerCase().includes(term)));
@@ -615,6 +712,8 @@ function query(argv) {
       if (chunk.page.toLowerCase().includes(term)) score += 10;
       if (haystacks.page.some(token => token.includes(term))) score += 4;
       score += haystacks.text.filter(token => token.includes(term)).length;
+      if (launchTerms.has(term) && ['entrypoints.md', 'workspaces.md'].includes(chunk.page)) score += 18;
+      if (['entrypoints.md', 'workspaces.md'].includes(chunk.page) && haystacks.text.some(token => token.includes('/') && token.includes(term))) score += 12;
     }
     if (chunk.status !== 'reviewed') score -= 0.25;
     return {

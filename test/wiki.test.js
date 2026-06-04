@@ -9,6 +9,7 @@ const test = require('node:test');
 const { wiki, query, parseFrontmatter, createFrontmatter, tokenize } = require('../src/wiki');
 const { extractSymbols } = require('../src/symbols');
 const { walkDir } = require('../src/util');
+const { discoverWorkspaces } = require('../src/workspaces');
 
 function tempRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-test-'));
@@ -23,6 +24,18 @@ function tempRepo() {
   fs.writeFileSync(path.join(dir, 'bin', 'raptor.js'), '#!/usr/bin/env node\nrequire("../src/index").main();\n', 'utf8');
   fs.writeFileSync(path.join(dir, 'src', 'index.js'), 'exports.main = function main() { return "ok"; };\n', 'utf8');
   fs.writeFileSync(path.join(dir, 'src', 'api.py'), 'def handle_request():\n    return True\n\nclass Worker:\n    pass\n', 'utf8');
+  return dir;
+}
+
+function nestedFrontendRepo() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-nested-'));
+  fs.mkdirSync(path.join(dir, 'frontend', 'gui', 'src'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'package.json'), JSON.stringify({
+    name: 'avepa-gui',
+    scripts: { dev: 'vite' },
+  }, null, 2), 'utf8');
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'vite.config.ts'), 'export default {};\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'src', 'main.tsx'), 'console.log("main");\n', 'utf8');
   return dir;
 }
 
@@ -67,12 +80,28 @@ test('wiki build creates pages, indexes, manifest, and llms exports', () => {
   const result = capture(() => wiki(['build', dir, '--json']));
   assert.equal(result.ok, true);
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'overview.md')));
+  assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'workspaces.md')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'chunks.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'symbols.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'links.json')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'manifest.json')));
   assert.ok(fs.existsSync(path.join(dir, 'llms.txt')));
   assert.ok(fs.existsSync(path.join(dir, 'llms-full.txt')));
+});
+
+test('wiki build renders nested workspaces and groups entrypoints by workspace', () => {
+  const dir = nestedFrontendRepo();
+  const result = capture(() => wiki(['build', dir, '--json']));
+  assert.equal(result.ok, true);
+
+  const workspaces = fs.readFileSync(path.join(dir, '.raptor', 'wiki', 'workspaces.md'), 'utf8');
+  const entrypoints = fs.readFileSync(path.join(dir, '.raptor', 'wiki', 'entrypoints.md'), 'utf8');
+
+  assert.ok(workspaces.includes('### frontend/gui'));
+  assert.ok(workspaces.includes('[frontend/gui/package.json](../../frontend/gui/package.json)'));
+  assert.ok(workspaces.includes('[frontend/gui/src/main.tsx](../../frontend/gui/src/main.tsx)'));
+  assert.ok(entrypoints.includes('### frontend/gui'));
+  assert.ok(entrypoints.includes('[frontend/gui/src/main.tsx](../../frontend/gui/src/main.tsx)'));
 });
 
 test('wiki validate reports stale source hashes after source changes', () => {
@@ -85,12 +114,41 @@ test('wiki validate reports stale source hashes after source changes', () => {
   assert.ok(result.result.pages.some(page => page.stale));
 });
 
+test('wiki validate reports stale and missing nested workspace sources', () => {
+  const staleDir = nestedFrontendRepo();
+  capture(() => wiki(['build', staleDir, '--json']));
+  fs.appendFileSync(path.join(staleDir, 'frontend', 'gui', 'package.json'), '\n', 'utf8');
+  const staleResult = capture(() => wiki(['validate', staleDir, '--json']));
+  const staleWorkspacePage = staleResult.result.pages.find(page => page.page === 'workspaces.md');
+  assert.equal(staleWorkspacePage.stale, true);
+  assert.ok(staleWorkspacePage.warnings.some(warning => warning.includes('frontend/gui/package.json')));
+
+  const missingDir = nestedFrontendRepo();
+  capture(() => wiki(['build', missingDir, '--json']));
+  fs.unlinkSync(path.join(missingDir, 'frontend', 'gui', 'src', 'main.tsx'));
+  const missingResult = capture(() => wiki(['validate', missingDir, '--json']));
+  const missingWorkspacePage = missingResult.result.pages.find(page => page.page === 'workspaces.md');
+  assert.ok(missingWorkspacePage.errors.some(error => error.includes('missing sources')));
+  assert.ok(missingResult.result.errors.some(error => error.includes('frontend/gui/src/main.tsx')));
+});
+
 test('query ranks entrypoint page for CLI entrypoint question and warns on draft pages', () => {
   const dir = tempRepo();
   capture(() => wiki(['build', dir, '--json']));
   const result = capture(() => query(['where is the CLI entrypoint?', dir, '--json']));
   assert.equal(result.ok, true);
   assert.equal(result.result.results[0].page, 'entrypoints.md');
+  assert.ok(result.result.warnings[0].includes('non-reviewed'));
+});
+
+test('query ranks workspace entrypoint chunks for frontend app questions', () => {
+  const dir = nestedFrontendRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  const result = capture(() => query(['where is the frontend app entrypoint?', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.ok(['entrypoints.md', 'workspaces.md'].includes(result.result.results[0].page));
+  assert.ok(result.result.results.some(row => row.excerpt.includes('frontend/gui/src/main.tsx')));
   assert.ok(result.result.warnings[0].includes('non-reviewed'));
 });
 
@@ -121,4 +179,73 @@ test('walkDir handles wide directories without spreading into push arguments', (
   } finally {
     fs.readdirSync = originalReaddirSync;
   }
+});
+
+test('discoverWorkspaces finds nested manifests and keeps invalid package warnings', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-workspaces-'));
+  fs.mkdirSync(path.join(dir, 'frontend', 'gui'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'backend'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'package.json'), JSON.stringify({ name: 'gui' }), 'utf8');
+  fs.writeFileSync(path.join(dir, 'backend', 'package.json'), '{ invalid', 'utf8');
+
+  const files = walkDir(dir);
+  const result = discoverWorkspaces(files, dir);
+  const roots = result.workspaces.map(workspace => workspace.root);
+
+  assert.ok(roots.includes('frontend/gui'));
+  assert.ok(roots.includes('backend'));
+  assert.equal(result.workspaces.find(workspace => workspace.root === 'frontend/gui').name, 'gui');
+  assert.ok(result.workspaces.find(workspace => workspace.root === 'backend').warnings.length > 0);
+  assert.ok(result.warnings.some(warning => warning.includes('Could not parse')));
+});
+
+test('discoverWorkspaces derives JavaScript, frontend, Python, and Go entrypoints', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-entrypoints-'));
+  fs.mkdirSync(path.join(dir, 'frontend', 'gui', 'src'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'tools'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'api'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'goapp', 'cmd', 'server'), { recursive: true });
+
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'package.json'), JSON.stringify({
+    name: 'gui',
+    main: 'src/main.tsx',
+    bin: { gui: './missing-cli.js' },
+    scripts: { dev: 'vite --host 0.0.0.0' },
+  }), 'utf8');
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'vite.config.ts'), 'export default {};\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'frontend', 'gui', 'src', 'main.tsx'), 'console.log("main");\n', 'utf8');
+
+  fs.writeFileSync(path.join(dir, 'tools', 'pyproject.toml'), '[project]\nname = "tools"\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'tools', 'main.py'), 'print("main")\n', 'utf8');
+
+  fs.writeFileSync(path.join(dir, 'api', 'setup.py'), 'from setuptools import setup\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'api', 'app.py'), 'print("app")\n', 'utf8');
+
+  fs.writeFileSync(path.join(dir, 'goapp', 'go.mod'), 'module example.com/goapp\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'goapp', 'cmd', 'server', 'main.go'), 'package main\n', 'utf8');
+
+  const result = discoverWorkspaces(walkDir(dir), dir);
+  const allEntrypoints = result.workspaces.flatMap(workspace => workspace.entrypoints.map(entry => entry.path));
+  const gui = result.workspaces.find(workspace => workspace.root === 'frontend/gui');
+
+  assert.ok(allEntrypoints.includes('frontend/gui/src/main.tsx'));
+  assert.ok(allEntrypoints.includes('tools/main.py'));
+  assert.ok(allEntrypoints.includes('api/app.py'));
+  assert.ok(allEntrypoints.includes('goapp/cmd/server/main.go'));
+  assert.ok(gui.skippedEntrypoints.some(entry => entry.path === 'frontend/gui/missing-cli.js'));
+});
+
+test('discoverWorkspaces includes explicit package bin files from ignored directories', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-bin-entry-'));
+  fs.mkdirSync(path.join(dir, 'bin'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+    name: 'cli',
+    bin: { cli: './bin/cli.js' },
+  }), 'utf8');
+  fs.writeFileSync(path.join(dir, 'bin', 'cli.js'), '#!/usr/bin/env node\n', 'utf8');
+
+  const result = discoverWorkspaces(walkDir(dir), dir);
+  const rootWorkspace = result.workspaces.find(workspace => workspace.root === '');
+  assert.ok(rootWorkspace.entrypoints.some(entry => entry.path === 'bin/cli.js'));
+  assert.equal(rootWorkspace.skippedEntrypoints.length, 0);
 });

@@ -3,7 +3,12 @@
     "overview.md": [],
     "architecture.md": [
       "overview.md",
+      "workspaces.md",
       "symbols.md"
+    ],
+    "workspaces.md": [
+      "entrypoints.md",
+      "architecture.md"
     ],
     "entrypoints.md": [],
     "symbols.md": [],
@@ -18,6 +23,10 @@
       "package.json",
       "bin/raptor.js"
     ],
+    "workspaces.md": [
+      "package.json",
+      "bin/raptor.js"
+    ],
     "entrypoints.md": [
       "bin/raptor.js"
     ],
@@ -29,6 +38,7 @@
       "src/symbols.js",
       "src/util.js",
       "src/wiki.js",
+      "src/workspaces.js",
       "src/write.js",
       "test/wiki.test.js"
     ],

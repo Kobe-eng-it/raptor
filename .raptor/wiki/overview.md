@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.359Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.590Z
 sources: 
   - package.json
   - README.md
@@ -25,8 +25,8 @@ CLI for AI-driven codebase documentation generation
 
 ## Stack
 
-- JavaScript: 9 files (47%)
-- Markdown: 7 files (37%)
+- JavaScript: 10 files (50%)
+- Markdown: 7 files (35%)
 - JSON: 1 files (5%)
 - PowerShell: 1 files (5%)
 - Shell: 1 files (5%)

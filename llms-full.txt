@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.385Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.611Z
 sources: 
   - package.json
   - bin/raptor.js
@@ -44,14 +44,15 @@ Raptor inferred the architecture from local source files, package metadata, entr
 ## Related Pages
 
 - [Project Overview](overview.md)
+- [Workspaces](workspaces.md)
 - [Symbols](symbols.md)
 
 <!-- source: .raptor/wiki/documentation.md -->
 
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.440Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.684Z
 sources: 
   - README.md
   - docs/api.md
@@ -83,8 +84,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.399Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.640Z
 sources: 
   - bin/raptor.js
 source_hashes: 
@@ -96,7 +97,9 @@ confidence: high
 
 ## Detected Entrypoints
 
-- [bin/raptor.js](../../bin/raptor.js)
+### .
+
+- [bin/raptor.js](../../bin/raptor.js) (cli, package.bin) - package.json bin points to bin/raptor.js
 
 ## Notes
 
@@ -106,8 +109,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.359Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.590Z
 sources: 
   - package.json
   - README.md
@@ -131,8 +134,8 @@ CLI for AI-driven codebase documentation generation
 
 ## Stack
 
-- JavaScript: 9 files (47%)
-- Markdown: 7 files (37%)
+- JavaScript: 10 files (50%)
+- Markdown: 7 files (35%)
 - JSON: 1 files (5%)
 - PowerShell: 1 files (5%)
 - Shell: 1 files (5%)
@@ -150,8 +153,8 @@ None detected.
 
 ---
 status: draft
-source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
-last_generated: 2026-06-04T12:53:51.411Z
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.650Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -160,6 +163,7 @@ sources:
   - src/symbols.js
   - src/util.js
   - src/wiki.js
+  - src/workspaces.js
   - src/write.js
   - test/wiki.test.js
 source_hashes: 
@@ -169,9 +173,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 4be74a0d8843116f
+  src/wiki.js: 3d1ae09c29189bb8
+  src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 650db79002e3b5ec
+  test/wiki.test.js: 6d1ac8f66c8d7eef
 confidence: medium
 ---
 
@@ -252,6 +257,11 @@ confidence: medium
 - `writePage` (function)
 - `buildContext` (function)
 - `makeMeta` (function)
+- `sourceLink` (function)
+- `workspaceLabel` (function)
+- `workspaceSummary` (function)
+- `renderWorkspaces` (function)
+- `renderWorkspaceEntrypoints` (function)
 - `createPages` (function)
 - `pageTitle` (function)
 - `createChunks` (function)
@@ -274,6 +284,30 @@ confidence: medium
 - `wiki` (function)
 - `module.exports` (commonjs-export)
 
+### src/workspaces.js
+
+- `slash` (function)
+- `rel` (function)
+- `dirOf` (function)
+- `joinRel` (function)
+- `existsRel` (function)
+- `readPackageJson` (function)
+- `readGoModuleName` (function)
+- `readPyProjectName` (function)
+- `addEntrypoint` (function)
+- `addSkipped` (function)
+- `normalizeExportValue` (function)
+- `stripRelativePrefix` (function)
+- `detectPackageEntrypoints` (function)
+- `candidatesFromScript` (function)
+- `detectFrontendEntrypoints` (function)
+- `detectPythonEntrypoints` (function)
+- `detectGoEntrypoints` (function)
+- `languageForManifest` (function)
+- `hydrateWorkspace` (function)
+- `discoverWorkspaces` (function)
+- `module.exports` (commonjs-export)
+
 ### src/write.js
 
 - `mergeContent` (function)
@@ -285,7 +319,51 @@ confidence: medium
 ### test/wiki.test.js
 
 - `tempRepo` (function)
+- `nestedFrontendRepo` (function)
 - `capture` (function)
 - `main` (commonjs-export)
 - `extra` (commonjs-export)
+
+<!-- source: .raptor/wiki/workspaces.md -->
+
+---
+status: draft
+source_commit: d01d684c9df0658084c409948a069442895051c8
+last_generated: 2026-06-04T13:55:53.626Z
+sources: 
+  - package.json
+  - bin/raptor.js
+source_hashes: 
+  package.json: 8691437094f0294e
+  bin/raptor.js: 663d4e86b062608c
+confidence: medium
+---
+
+# Workspaces
+
+## Summary
+
+Only the root workspace was analyzed.
+
+## Detected Workspaces
+
+### .
+
+- Manifest: [package.json](../../package.json)
+- Type: package.json
+- Name: raptor-docgen
+- Language: JavaScript
+
+#### Entrypoints
+
+- [bin/raptor.js](../../bin/raptor.js) (cli, package.bin) - package.json bin points to bin/raptor.js
+
+## Build Warnings
+
+None detected.
+
+## Related Pages
+
+- [Entrypoints](entrypoints.md)
+- [Architecture](architecture.md)
 
