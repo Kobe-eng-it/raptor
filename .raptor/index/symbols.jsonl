@@ -80,6 +80,8 @@
 {"path":"src/wiki.js","name":"parseQueryArgs","kind":"function"}
 {"path":"src/wiki.js","name":"snippet","kind":"function"}
 {"path":"src/wiki.js","name":"hasSourcePath","kind":"function"}
+{"path":"src/wiki.js","name":"extractSourcePaths","kind":"function"}
+{"path":"src/wiki.js","name":"formatQueryText","kind":"function"}
 {"path":"src/wiki.js","name":"query","kind":"function"}
 {"path":"src/wiki.js","name":"wiki","kind":"function"}
 {"path":"src/wiki.js","name":"module.exports","kind":"commonjs-export"}
@@ -112,5 +114,6 @@
 {"path":"test/wiki.test.js","name":"tempRepo","kind":"function"}
 {"path":"test/wiki.test.js","name":"nestedFrontendRepo","kind":"function"}
 {"path":"test/wiki.test.js","name":"capture","kind":"function"}
+{"path":"test/wiki.test.js","name":"captureText","kind":"function"}
 {"path":"test/wiki.test.js","name":"main","kind":"commonjs-export"}
 {"path":"test/wiki.test.js","name":"extra","kind":"commonjs-export"}

@@ -756,6 +756,59 @@ function hasSourcePath(text) {
   return /[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go)\b/.test(text);
 }
 
+function extractSourcePaths(text) {
+  const sources = [];
+  const seen = new Set();
+  const patterns = [
+    /\[[^\]]+\]\(\.\.\/\.\.\/([^)]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go))\)/g,
+    /\b([A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go))\b/g,
+  ];
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (seen.has(match[1])) continue;
+      seen.add(match[1]);
+      sources.push(match[1]);
+    }
+  }
+  return sources;
+}
+
+function formatQueryText(data) {
+  const lines = [`Question: ${data.question}`];
+  if (!data.results.length) {
+    lines.push('', 'No wiki matches found.');
+    return lines.join('\n');
+  }
+
+  const best = data.results[0];
+  lines.push('', `Best match: ${best.page} / ${best.heading} (${best.status})`);
+  if (best.sources.length) {
+    lines.push(`Answer: ${best.sources[0]}`);
+  } else {
+    lines.push(`Answer: ${best.excerpt}`);
+  }
+
+  lines.push('', 'Top results:');
+  for (const result of data.results.slice(0, 5)) {
+    const sourceSuffix = result.sources.length ? ` -> ${result.sources[0]}` : '';
+    lines.push(`- ${result.page} / ${result.heading} (${result.status}, score ${result.score})${sourceSuffix}`);
+  }
+
+  const sourcePaths = [...new Set(data.results.flatMap(result => result.sources))].slice(0, 8);
+  if (sourcePaths.length) {
+    lines.push('', 'Sources:');
+    for (const source of sourcePaths) lines.push(`- ${source}`);
+  }
+
+  if (data.warnings.length) {
+    lines.push('', 'Warnings:');
+    for (const warning of data.warnings) lines.push(`- ${warning}`);
+  }
+
+  return lines.join('\n');
+}
+
 function query(argv) {
   const { json, targetPath, question } = parseQueryArgs(argv);
   if (!question) return outputError('query question is required', json);
@@ -808,18 +861,21 @@ function query(argv) {
       status: chunk.status,
       score,
       excerpt: snippet(chunk.text, terms),
+      sources: extractSourcePaths(chunk.text),
     };
   }).filter(result => result.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 8);
 
   const staleOrDraft = [...new Set(results.filter(result => result.status !== 'reviewed').map(result => result.page))];
-  output({
+  const data = {
     question,
     results,
     symbols: symbolHits.slice(0, 20),
     warnings: staleOrDraft.length ? [`Results include non-reviewed pages: ${staleOrDraft.join(', ')}`] : [],
-  }, json);
+  };
+  if (json) output(data, json);
+  else console.log(formatQueryText(data));
 }
 
 function wiki(argv) {

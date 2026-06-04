@@ -51,6 +51,18 @@ function capture(fn) {
   return JSON.parse(lines.join('\n'));
 }
 
+function captureText(fn) {
+  const original = console.log;
+  const lines = [];
+  console.log = (value) => lines.push(value);
+  try {
+    fn();
+  } finally {
+    console.log = original;
+  }
+  return lines.join('\n');
+}
+
 test('frontmatter round-trips required wiki metadata', () => {
   const fm = createFrontmatter({
     status: 'draft',
@@ -183,6 +195,21 @@ test('wiki review marks pages reviewed and refreshes query chunk warnings', () =
   assert.deepEqual(queryResult.result.warnings, []);
   assert.equal(queryResult.result.results[0].status, 'reviewed');
 });
+
+test('query without json prints a human-readable answer with sources', () => {
+  const dir = nestedFrontendRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  capture(() => wiki(['review', '--all', dir, '--json']));
+
+  const text = captureText(() => query(['where is the app started?', dir]));
+
+  assert.ok(text.includes('Question: where is the app started?'));
+  assert.ok(text.includes('Best match: entrypoints.md / Detected Entrypoints (reviewed)'));
+  assert.ok(text.includes('Answer: frontend/gui/src/main.tsx'));
+  assert.ok(text.includes('Sources:'));
+  assert.ok(!text.includes('Results include non-reviewed pages'));
+});
+
 
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
