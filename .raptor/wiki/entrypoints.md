@@ -1,11 +1,11 @@
 ---
 status: draft
-source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
-last_generated: 2026-06-04T10:18:46.668Z
+source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
+last_generated: 2026-06-04T12:53:51.399Z
 sources: 
   - bin/raptor.js
 source_hashes: 
-  bin/raptor.js: 99411be5e01d44d4
+  bin/raptor.js: 663d4e86b062608c
 confidence: high
 ---
 

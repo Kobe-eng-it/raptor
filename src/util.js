@@ -83,7 +83,9 @@ function walkDir(dir, maxDepth = 8, depth = 0) {
     if (IGNORE_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...walkDir(fullPath, maxDepth, depth + 1));
+      for (const nestedPath of walkDir(fullPath, maxDepth, depth + 1)) {
+        results.push(nestedPath);
+      }
     } else if (entry.isFile()) {
       const ext = path.extname(entry.name).toLowerCase();
       if (!IGNORE_EXTS.has(ext)) {

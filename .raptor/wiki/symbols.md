@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
-last_generated: 2026-06-04T10:18:46.680Z
+source_commit: 86c17ae4eac3bf40a93da77ef07f3dd0e4f79a11
+last_generated: 2026-06-04T12:53:51.411Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -18,10 +18,10 @@ source_hashes:
   src/doctor.js: c97c2e2154cc4c78
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
-  src/util.js: 3e444c0973d2248d
+  src/util.js: baaf733a6b4510dc
   src/wiki.js: 4be74a0d8843116f
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: a91b79b71bb2b580
+  test/wiki.test.js: 650db79002e3b5ec
 confidence: medium
 ---
 

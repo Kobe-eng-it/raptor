@@ -8,6 +8,7 @@ const test = require('node:test');
 
 const { wiki, query, parseFrontmatter, createFrontmatter, tokenize } = require('../src/wiki');
 const { extractSymbols } = require('../src/symbols');
+const { walkDir } = require('../src/util');
 
 function tempRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-test-'));
@@ -95,4 +96,29 @@ test('query ranks entrypoint page for CLI entrypoint question and warns on draft
 
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
+});
+
+test('walkDir handles wide directories without spreading into push arguments', () => {
+  const originalReaddirSync = fs.readdirSync;
+  const root = path.join(os.tmpdir(), 'raptor-wide-mock');
+  const nested = path.join(root, 'src');
+  const dirent = (name, type) => ({
+    name,
+    isDirectory: () => type === 'directory',
+    isFile: () => type === 'file',
+  });
+
+  try {
+    fs.readdirSync = (dir) => {
+      if (dir === root) return [dirent('src', 'directory')];
+      if (dir === nested) {
+        return Array.from({ length: 70000 }, (_, i) => dirent(`file-${i}.js`, 'file'));
+      }
+      return [];
+    };
+    const files = walkDir(root);
+    assert.equal(files.length, 70000);
+  } finally {
+    fs.readdirSync = originalReaddirSync;
+  }
 });
