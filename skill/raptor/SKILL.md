@@ -42,6 +42,30 @@ If the doctor check fails on required items (`node`, `writePermission`), stop an
 1. Run `raptor doctor --json` to check prerequisites.
 2. Parse the JSON result. If `ok` is `false` for any required check, report which checks failed and stop.
 3. Show the user a brief summary of the environment (git available, in a git repo or not).
+4. Identify the target codebase path before build or query:
+   - if the user named or implied a path, use that path explicitly;
+   - otherwise use the current working directory and report it to the user;
+   - never assume the parent workspace is the app codebase when it contains multiple repositories.
+
+### Target Path Discipline
+
+Always run Raptor commands against the intended codebase path, not against an arbitrary parent directory.
+
+For a target path:
+
+```bash
+raptor wiki build "<target-path>" --json
+raptor wiki validate "<target-path>" --json
+raptor query "<question>" "<target-path>" --json
+```
+
+If the user asks about a project such as `avepa`, but the current directory is a parent workspace such as `Codebase`, ask the user for the target path or use the known project path. Do not build/query the parent workspace.
+
+After each query, sanity-check the returned `path`, `result.symbols[].path`, and `result.results[].sources`:
+
+- If most sources point to the Raptor tool itself (`raptor/bin`, `raptor/src`, `raptor/skill`, `.raptor/wiki` for the wrong project), stop and say the query ran against the wrong target path.
+- Then rerun the build/query with the correct target path if it is known.
+- Do not answer a domain question from Raptor's own implementation files unless the user is asking about Raptor itself.
 
 ---
 
@@ -51,9 +75,9 @@ Raptor's authoritative documentation source is `.raptor/wiki`, not `docs/`.
 
 For local projects:
 
-1. Run `raptor wiki init --json` if `.raptor/wiki` does not exist.
-2. Run `raptor wiki build --json`.
-3. Run `raptor wiki validate --json`.
+1. Run `raptor wiki init "<target-path>" --json` if `.raptor/wiki` does not exist.
+2. Run `raptor wiki build "<target-path>" --json`.
+3. Run `raptor wiki validate "<target-path>" --json`.
 4. Present the generated wiki pages and validation warnings/errors for human review.
 
 The build creates:
@@ -84,7 +108,7 @@ Raptor uses soft gates:
 
 - Queries may run against `draft` or `stale` pages.
 - Always disclose when query results include non-reviewed or stale pages.
-- If the user approves the generated wiki, run `raptor wiki review --all --json` and then `raptor wiki status --json`.
+- If the user approves the generated wiki, run `raptor wiki review --all "<target-path>" --json` and then `raptor wiki status "<target-path>" --json`.
 - Do not copy wiki content into `docs/` in this increment unless the user explicitly asks for README/llms exports.
 
 ---
@@ -96,7 +120,7 @@ When the user asks a codebase question, query the wiki first.
 For quick lookup questions, use the human-readable output:
 
 ```bash
-raptor query "<question>"
+raptor query "<question>" "<target-path>"
 ```
 
 Use non-JSON output for user-facing answers because it surfaces the best match and source paths directly.
@@ -104,7 +128,7 @@ Use non-JSON output for user-facing answers because it surfaces the best match a
 For procedural, diagnostic, or implementation questions, use JSON output and inspect sources before answering. Procedural questions often start with words such as "how", "come", "where", "dove", "why", "perche", "what calls", "come si crea", "come funziona", or "dove viene gestito".
 
 ```bash
-raptor query "<question>" --json
+raptor query "<question>" "<target-path>" --json
 ```
 
 Use the returned pages, excerpts, symbols, sources, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
@@ -113,13 +137,13 @@ Use the returned pages, excerpts, symbols, sources, and warnings as grounded con
 
 For questions such as "Come si crea un'utenza?", do not stop at the Raptor query result. Use this workflow:
 
-1. Run `raptor query "<question>" --json`.
+1. Run `raptor query "<question>" "<target-path>" --json`.
 2. Read the top returned wiki page under `.raptor/wiki/`.
 3. Read the top 3-5 source paths from `result.symbols[].path` and `result.results[].sources`, preferring symbol paths first.
 4. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
 5. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run a second Raptor query before answering:
-   - `raptor query "backend endpoint create user account role keycloak" --json`
-   - `raptor query "API create user account role" --json`
+   - `raptor query "backend endpoint create user account role keycloak" "<target-path>" --json`
+   - `raptor query "API create user account role" "<target-path>" --json`
    - use the user's domain words too, for example `utenza`, `utente`, `ruolo`, `profilo`.
 6. Read any backend/controller/service/config files returned by the second query, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
 7. Answer in the user's language with:
