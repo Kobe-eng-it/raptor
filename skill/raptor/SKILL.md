@@ -117,13 +117,42 @@ For questions such as "Come si crea un'utenza?", do not stop at the Raptor query
 2. Read the top returned wiki page under `.raptor/wiki/`.
 3. Read the top 3-5 source paths from `result.symbols[].path` and `result.results[].sources`, preferring symbol paths first.
 4. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
-5. Answer in the user's language with:
+5. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run a second Raptor query before answering:
+   - `raptor query "backend endpoint create user account role keycloak" --json`
+   - `raptor query "API create user account role" --json`
+   - use the user's domain words too, for example `utenza`, `utente`, `ruolo`, `profilo`.
+6. Read any backend/controller/service/config files returned by the second query, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
+7. Answer in the user's language with:
    - the shortest procedural explanation that fits the evidence;
    - the key files and symbols involved;
    - any endpoint, command, method, or component names found;
    - an explicit caveat if Raptor found likely files but the exact workflow is not fully visible.
 
 Never claim a workflow is complete unless the inspected files show the full path from entrypoint/caller to implementation. If the result only identifies a likely service or symbol, say that clearly and suggest the next file to inspect.
+
+### Required Answer Shape
+
+For source-grounded answers, include these sections:
+
+```text
+Risposta:
+[direct answer]
+
+Procedura:
+1. [step]
+2. [step]
+
+File verificati:
+- path/to/file.ext — [what was verified]
+
+Evidenza:
+- [method, endpoint, config value, role name, or symbol that supports the answer]
+
+Limiti:
+- [what was not visible or still needs backend/provider verification]
+```
+
+If no backend endpoint is found after the second query, say "Non ho trovato una API backend interna per creare utenze nei file verificati" instead of implying the endpoint does not exist globally.
 
 ---
 

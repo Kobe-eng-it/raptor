@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
-last_generated: 2026-06-04T15:46:33.518Z
+source_commit: b7ce46f5c465fde17b01575b55837482eb5296a6
+last_generated: 2026-06-04T15:57:33.126Z
 sources: 
   - src/analyze.js
   - src/diff.js
