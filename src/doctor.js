@@ -1,11 +1,26 @@
 'use strict';
 
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const { output } = require('./util');
+const { getGitRoot } = require('./git');
 
 function checkTool(command, versionFlag = '--version') {
+  if (command === 'node') {
+    return { ok: true, version: process.version.replace(/^v/, '') };
+  }
   try {
-    const out = execSync(`${command} ${versionFlag}`, { stdio: 'pipe' }).toString().trim();
+    const candidates = process.platform === 'win32' && command === 'git' ? ['git.exe', 'git'] : [command];
+    let result = null;
+    for (const candidate of candidates) {
+      result = spawnSync(candidate, [versionFlag], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: false,
+      });
+      if (result.status === 0) break;
+    }
+    if (!result || result.status !== 0) return { ok: false, version: null };
+    const out = (result.stdout || '').trim();
     const version = out.split('\n')[0].replace(/[^\d.]/g, '').split('.').slice(0, 3).join('.');
     return { ok: true, version: version || out.split('\n')[0].substring(0, 30) };
   } catch {
@@ -27,13 +42,8 @@ function checkWritePermission(dir) {
 }
 
 function checkGitRepo(cwd) {
-  try {
-    const root = execSync('git rev-parse --show-toplevel', { cwd, stdio: 'pipe' })
-      .toString().trim();
-    return { ok: true, root };
-  } catch {
-    return { ok: false, root: null };
-  }
+  const root = getGitRoot(cwd);
+  return root ? { ok: true, root } : { ok: false, root: null };
 }
 
 function doctor(argv) {
@@ -62,7 +72,8 @@ function doctor(argv) {
   const allOk = Object.values(checks).every(c => !c.required || c.ok);
 
   const notes = [];
-  if (!checks.git.ok) notes.push('Git not found — incremental update unavailable, full regeneration will be used.');
+  if (!checks.git.ok && checks.gitRepo.ok) notes.push('Git executable unavailable, but repository metadata is readable.');
+  if (!checks.git.ok && !checks.gitRepo.ok) notes.push('Git not found — incremental update unavailable, full regeneration will be used.');
   if (!checks.gitRepo.ok && checks.git.ok) notes.push('Not inside a git repo — incremental update unavailable.');
   if (!checks.writePermission.ok) notes.push('No write permission in current directory.');
 

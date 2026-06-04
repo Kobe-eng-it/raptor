@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { hasGitRepo: gitHasRepo } = require('./git');
 
 const IGNORE_DIRS = new Set([
   'node_modules', '.git', 'dist', 'build', 'out', '.next', '.nuxt',
@@ -161,6 +161,7 @@ function getPackageInfo(rootPath) {
 function getEntryPoints(files, rootPath) {
   const candidates = [
     'src/index.ts', 'src/index.js', 'src/main.ts', 'src/main.js', 'src/app.ts', 'src/app.js',
+    'bin/raptor.js', 'bin/index.js', 'cli.js',
     'index.ts', 'index.js', 'main.ts', 'main.js', 'app.ts', 'app.js',
     'main.go', 'main.py', 'app.py', 'manage.py', 'server.py',
     'src/main.rs', 'main.rs',
@@ -204,12 +205,7 @@ function checkExistingDocs(rootPath) {
 }
 
 function hasGitRepo(rootPath) {
-  try {
-    execSync('git rev-parse --git-dir', { cwd: rootPath, stdio: 'pipe' });
-    return true;
-  } catch {
-    return false;
-  }
+  return gitHasRepo(rootPath);
 }
 
 function output(data, json) {

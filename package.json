@@ -5,9 +5,13 @@
   "bin": {
     "raptor": "./bin/raptor.js"
   },
+  "scripts": {
+    "test": "node test/wiki.test.js"
+  },
   "files": [
     "bin/",
-    "src/"
+    "src/",
+    "skill/"
   ],
   "engines": {
     "node": ">=18"

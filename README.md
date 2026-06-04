@@ -1,19 +1,17 @@
-# Raptor 🦖
+# Raptor
 
-> AI-driven codebase documentation generator for GitHub Copilot CLI, Claude Code, Cursor, and more.
+> Local, queryable codebase wiki for GitHub Copilot CLI, Claude Code, Cursor, and more.
 
-Raptor analyzes your codebase and generates structured, up-to-date documentation via your AI assistant:
+Raptor builds `.raptor/wiki` as the authoritative local documentation source, then lets an AI assistant query it through deterministic lexical search:
 
-| Doc | Path | Description |
-|-----|------|-------------|
-| README | `README.md` | Project overview, install, usage |
-| Architecture | `docs/ARCHITECTURE.md` | System design, modules, data flow |
-| API Reference | `docs/api.md` | HTTP routes, exported functions and types |
-| Docstrings | `docs/docstrings.md` | Symbol inventory with inferred descriptions |
-| Operations | `docs/OPERATIONS.md` | Runtime, deploy, monitoring, incident basics |
-| Security | `docs/SECURITY.md` | Auth model, secrets handling, security controls |
-| Contributing | `docs/CONTRIBUTING.md` | Dev workflow, testing, branch and PR conventions |
-| LLM Index | `llms.txt` | [llms.txt](https://llmstxt.org) standard index |
+| Artifact | Path | Description |
+|----------|------|-------------|
+| Wiki Pages | `.raptor/wiki/*.md` | Reviewable Markdown pages with source metadata |
+| Search Chunks | `.raptor/index/chunks.jsonl` | Lexical query index built from wiki pages |
+| Symbols | `.raptor/index/symbols.jsonl` | Extracted CommonJS, ESM, TypeScript, Python, and Go symbols |
+| Links | `.raptor/index/links.json` | Page-to-page and page-to-source references |
+| Manifest | `.raptor/manifest.json` | Schema, source commit, and build timestamp |
+| LLM Exports | `llms.txt`, `llms-full.txt` | Convenience exports derived from the wiki |
 
 ---
 
@@ -21,13 +19,13 @@ Raptor analyzes your codebase and generates structured, up-to-date documentation
 
 Raptor has two components:
 
-1. **CLI** (`raptor-docgen` on npm) — deterministic work: file tree, language detection, symbol extraction, git diff, file write/merge
-2. **Skill** (`skill/raptor/SKILL.md`) — installed in your AI agent to orchestrate the LLM reasoning and generation
+1. **CLI** (`raptor-docgen` on npm) — deterministic work: file walking, language detection, symbol extraction, wiki generation, validation, and local query ranking
+2. **Skill** (`skill/raptor/SKILL.md`) — installed in your AI agent to orchestrate analysis, review, and codebase questions
 
-The skill calls the CLI for all data gathering and file writing. The LLM generates the actual documentation content.
+The CLI remains the deterministic source of truth. The skill asks the CLI to build and query `.raptor/wiki`, then uses the returned pages, excerpts, symbols, and warnings as grounded context.
 
 ```
-User → AI Agent (skill) → raptor analyze --json → [LLM generates docs] → raptor write --file ...
+User -> AI Agent (skill) -> raptor doctor -> raptor wiki build -> raptor wiki validate -> raptor query
 ```
 
 ---
@@ -97,26 +95,16 @@ Run raptor
 
 The skill will:
 1. Check prerequisites (`raptor doctor`)
-2. Analyze the codebase
-3. Present a plan and ask for your confirmation
-4. Generate each document
-5. Write files (with smart merge if docs already exist)
+2. Initialize/build `.raptor/wiki`
+3. Validate frontmatter, links, source references, and stale pages
+4. Present wiki pages for review
+5. Query the wiki for follow-up codebase questions
 
-### Deep analysis
-
-For richer output (reads key source files in addition to structure):
+You can also ask direct questions after building the wiki:
 
 ```
-Generate documentation with deep analysis
+Ask raptor where documentation generation happens
 ```
-
-### GitHub repository
-
-```
-Generate documentation for https://github.com/org/repo
-```
-
-In GitHub mode, docs are shown in the chat. To write files, clone the repo and run in local mode.
 
 ---
 
@@ -127,23 +115,17 @@ raptor analyze [path] [--deep] [--json]   Analyze codebase
 raptor diff    [path] [--json]            Git-tracked changes since HEAD
 raptor write   --file <path> [--merge]    Write doc content from stdin
 raptor doctor  [--json]                   Check prerequisites
+raptor wiki init [path] [--json]          Create .raptor wiki/index directories
+raptor wiki build [path] [--json]         Build wiki pages and lexical indexes
+raptor wiki validate [path] [--json]      Validate wiki metadata, links, and sources
+raptor wiki status [path] [--json]        Show draft, reviewed, and stale wiki pages
+raptor query <question> [path] [--json]   Search the local wiki
 raptor version [--json]                   Print version
 ```
 
-### Section markers
+### Soft Gates
 
-Raptor uses stable HTML comment markers for smart merging:
-
-```markdown
-<!-- raptor:start:overview -->
-## Overview
-
-Your content here...
-
-<!-- raptor:end:overview -->
-```
-
-On subsequent runs with `--merge`, only sections between matching markers are updated. Content outside markers is preserved.
+Wiki pages use `status: draft | reviewed | stale` frontmatter. Queries still work against draft or stale pages, but results include warnings when the answer is grounded in non-reviewed or stale material.
 
 ---
 
@@ -211,9 +193,14 @@ raptor/
   src/
     analyze.js            File tree, language detection, symbol extraction
     diff.js               Git diff for incremental updates
+    git.js                Git metadata helpers with filesystem fallback
+    symbols.js            Pragmatic source symbol extraction
+    wiki.js               Wiki build, validate, status, and query commands
     write.js              File write with section-marker merge
     doctor.js             Environment preflight checks
     util.js               Shared utilities
+  test/
+    wiki.test.js          Wiki core regression tests
   skill/
     raptor/
       SKILL.md            AI skill (works with Copilot, Claude, Cursor, etc.)

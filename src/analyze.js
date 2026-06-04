@@ -2,75 +2,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const {
   walkDir, detectLanguages, detectFramework, getPackageInfo,
   getEntryPoints, checkExistingDocs, hasGitRepo, output, outputError,
 } = require('./util');
+const { extractSymbols } = require('./symbols');
 
 const DEEP_FILES_LIMIT = 20;
 const DEEP_FILE_SIZE_LIMIT = 32 * 1024; // 32KB per file
-
-function extractSymbols(filePath) {
-  let content;
-  try { content = fs.readFileSync(filePath, 'utf8'); } catch { return []; }
-  const ext = path.extname(filePath).toLowerCase();
-  const symbols = [];
-
-  if (['.ts', '.tsx', '.js', '.jsx', '.mjs'].includes(ext)) {
-    // exported functions, classes, types, interfaces, consts
-    const patterns = [
-      /^export\s+(?:async\s+)?function\s+(\w+)/gm,
-      /^export\s+class\s+(\w+)/gm,
-      /^export\s+(?:type|interface|enum)\s+(\w+)/gm,
-      /^export\s+(?:const|let|var)\s+(\w+)/gm,
-      /^export\s+default\s+(?:function\s+)?(\w+)?/gm,
-    ];
-    for (const pattern of patterns) {
-      let m;
-      while ((m = pattern.exec(content)) !== null) {
-        if (m[1]) symbols.push({ name: m[1], kind: 'export' });
-      }
-    }
-  }
-
-  if (ext === '.py') {
-    const patterns = [
-      /^def\s+(\w+)\s*\(/gm,
-      /^class\s+(\w+)/gm,
-    ];
-    for (const pattern of patterns) {
-      let m;
-      while ((m = pattern.exec(content)) !== null) {
-        symbols.push({ name: m[1], kind: 'def' });
-      }
-    }
-  }
-
-  if (ext === '.go') {
-    const patterns = [
-      /^func\s+(?:\(\w+\s+\*?\w+\)\s+)?(\w+)\s*\(/gm,
-      /^type\s+(\w+)\s+/gm,
-    ];
-    for (const pattern of patterns) {
-      let m;
-      while ((m = pattern.exec(content)) !== null) {
-        if (m[1] && /^[A-Z]/.test(m[1])) symbols.push({ name: m[1], kind: 'exported' });
-      }
-    }
-  }
-
-  if (['.ts', '.js'].includes(ext)) {
-    // REST routes: router.get/post/put/delete/patch
-    const routePattern = /(?:router|app|server)\.(get|post|put|delete|patch|use)\s*\(\s*['"`]([^'"`]+)['"`]/gm;
-    let m;
-    while ((m = routePattern.exec(content)) !== null) {
-      symbols.push({ name: `${m[1].toUpperCase()} ${m[2]}`, kind: 'route' });
-    }
-  }
-
-  return symbols;
-}
 
 function readDeepContent(files, rootPath) {
   // Pick the most interesting files: entry points, controllers, services, models
@@ -130,7 +69,7 @@ function analyze(argv) {
   const symbolMap = {};
   const symbolFiles = files.filter(f => {
     const ext = path.extname(f).toLowerCase();
-    return ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.py', '.go'].includes(ext);
+    return ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.go'].includes(ext);
   }).slice(0, 100);
 
   for (const f of symbolFiles) {

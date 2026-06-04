@@ -1,19 +1,20 @@
 ---
 name: raptor
-description: "Generates comprehensive documentation for a codebase: README.md, docs/ARCHITECTURE.md, docs/api.md, docs/docstrings.md, docs/OPERATIONS.md, docs/SECURITY.md, docs/CONTRIBUTING.md, and llms.txt. Use when the user asks to document a project, generate docs, run raptor, or mentions codebase documentation."
+description: "Builds and queries a local Raptor wiki for a codebase. Use when the user asks to run raptor, document a project, build a codebase wiki, or ask questions about local codebase documentation."
 metadata:
   short-description: Codebase documentation generator
 ---
 
 # Raptor
 
-Generate comprehensive, structured documentation for any codebase. Reply in the user's preferred language.
+Build, review, and query a local codebase wiki. Reply in the user's preferred language.
 
 ## When To Use
 
-- User wants to generate or update project documentation
-- User wants a README, architecture doc, API reference, operations/security docs, or llms.txt
-- User mentions "raptor", "generate docs", "document this project"
+- User wants to generate or update a local codebase wiki
+- User wants to ask questions about the codebase through Raptor
+- User wants README/llms exports derived from `.raptor/wiki`
+- User mentions "raptor", "run raptor", "generate docs", "document this project"
 
 ---
 
@@ -44,338 +45,57 @@ If the doctor check fails on required items (`node`, `writePermission`), stop an
 
 ---
 
-## Phase 2 — Source
+## Phase 2 — Wiki Build
 
-Ask the user: **local project (current directory) or a GitHub repository URL?**
+Raptor's authoritative documentation source is `.raptor/wiki`, not `docs/`.
 
-### Local mode
-Run `raptor analyze --json` in the project root.
-If the user wants deeper analysis (explicit request or project has > 50 files), run `raptor analyze --deep --json`.
+For local projects:
 
-### GitHub mode
-Use the available GitHub MCP tools:
-- Use `github-mcp-server-get_file_contents` to fetch the repo root and key files
-- Use `github-mcp-server-search_code` to find exported functions, routes, types
-- Build the analysis manually from MCP results
-- Note to the user that in GitHub mode, docs will be generated in the chat (no write-back to the repo). If they want to write files, they must clone the repo and run in local mode.
+1. Run `raptor wiki init --json` if `.raptor/wiki` does not exist.
+2. Run `raptor wiki build --json`.
+3. Run `raptor wiki validate --json`.
+4. Present the generated wiki pages and validation warnings/errors for human review.
 
----
+The build creates:
 
-## Phase 3 — Analysis & Plan
-
-After analysis, present a **summary table** to the user:
-
-| Doc | Output Path | Status |
-|-----|-------------|--------|
-| README | `README.md` | ✅ exists / ⬜ new |
-| Architecture | `docs/ARCHITECTURE.md` | ... |
-| API Reference | `docs/api.md` | ... |
-| Docstrings | `docs/docstrings.md` | ... |
-| Operations | `docs/OPERATIONS.md` | ... |
-| Security | `docs/SECURITY.md` | ... |
-| Contributing | `docs/CONTRIBUTING.md` | ... |
-| LLM Index | `llms.txt` | ... |
-
-Then ask:
-1. **Language**: What language should the documentation be written in? (Detect from context if not specified)
-2. **Mode**: For existing docs — overwrite entirely, or merge (update only changed sections)?
-   - If git is available, suggest merge mode and show which source files changed since last commit (`raptor diff --json`)
-   - If no git, suggest full regeneration
-
-Wait for user confirmation before proceeding.
+- `.raptor/wiki/*.md` authoritative wiki pages with `draft`, `reviewed`, or `stale` frontmatter.
+- `.raptor/index/chunks.jsonl` lexical search chunks.
+- `.raptor/index/symbols.jsonl` extracted source symbols.
+- `.raptor/index/links.json` wiki and source reference links.
+- `.raptor/manifest.json` schema, build time, and source commit metadata.
+- `llms.txt` and `llms-full.txt` as export indexes derived from the wiki. Treat these as convenience files, not a guaranteed LLM provider standard.
 
 ---
 
-## Phase 4 — Generate
+## Phase 3 — Review Gate
 
-Generate documents one at a time, in this order:
-1. `README.md`
-2. `docs/ARCHITECTURE.md`
-3. `docs/api.md`
-4. `docs/docstrings.md`
-5. `docs/OPERATIONS.md`
-6. `docs/SECURITY.md`
-7. `docs/CONTRIBUTING.md`
-8. `llms.txt` (always last — it indexes the other docs)
+After validation, present a concise table:
 
-For each document, follow the template below. After generating, pipe the content into:
-- `echo "<content>" | raptor write --file <path>` for new files
-- `echo "<content>" | raptor write --file <path> --merge` when updating existing files with raptor markers
+| Wiki Page | Status | Notes |
+|-----------|--------|-------|
+| `.raptor/wiki/overview.md` | draft/reviewed/stale | validation notes |
+| `.raptor/wiki/architecture.md` | draft/reviewed/stale | validation notes |
+| `.raptor/wiki/entrypoints.md` | draft/reviewed/stale | validation notes |
+| `.raptor/wiki/symbols.md` | draft/reviewed/stale | validation notes |
+| `.raptor/wiki/documentation.md` | draft/reviewed/stale | validation notes |
 
-Use PowerShell heredoc syntax on Windows:
-```powershell
-@'
-<document content here>
-'@ | raptor write --file README.md --merge
-```
+Raptor uses soft gates:
+
+- Queries may run against `draft` or `stale` pages.
+- Always disclose when query results include non-reviewed or stale pages.
+- Do not copy wiki content into `docs/` in this increment unless the user explicitly asks for README/llms exports.
 
 ---
 
-### README.md template
+## Phase 4 — Query
 
-```
-<!-- raptor:start:header -->
-# <project-name>
+When the user asks a codebase question, query the wiki first:
 
-> <one-sentence description>
-<!-- raptor:end:header -->
-
-<!-- raptor:start:overview -->
-## Overview
-
-<2-3 paragraphs describing what the project does, its purpose, and key features>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:install -->
-## Installation
-
-<install instructions derived from package.json scripts, go.mod, Cargo.toml, etc.>
-<!-- raptor:end:install -->
-
-<!-- raptor:start:usage -->
-## Usage
-
-<basic usage examples>
-<!-- raptor:end:usage -->
-
-<!-- raptor:start:structure -->
-## Project Structure
-
-<key directories and what they contain>
-<!-- raptor:end:structure -->
-
-<!-- raptor:start:license -->
-## License
-
-<license info from package.json or LICENSE file if present>
-<!-- raptor:end:license -->
+```bash
+raptor query "<question>" --json
 ```
 
----
-
-### docs/ARCHITECTURE.md template
-
-```
-<!-- raptor:start:overview -->
-# Architecture
-
-## Overview
-
-<high-level description of the system: what it does, core responsibilities>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:stack -->
-## Tech Stack
-
-<language, framework, key libraries inferred from analysis>
-<!-- raptor:end:stack -->
-
-<!-- raptor:start:structure -->
-## Module Structure
-
-<describe each top-level directory and its role>
-<!-- raptor:end:structure -->
-
-<!-- raptor:start:dataflow -->
-## Data Flow
-
-<describe how data moves through the system: input → processing → output>
-<!-- raptor:end:dataflow -->
-
-<!-- raptor:start:decisions -->
-## Key Design Decisions
-
-<notable architectural choices and tradeoffs>
-<!-- raptor:end:decisions -->
-```
-
----
-
-### docs/api.md template
-
-```
-<!-- raptor:start:overview -->
-# API Reference
-
-<brief intro>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:routes -->
-## HTTP Routes
-
-<table or list of routes found in the codebase: METHOD /path — description>
-<!-- raptor:end:routes -->
-
-<!-- raptor:start:exports -->
-## Exported Functions & Types
-
-<for each file with exports: file path as H3, then list of exported symbols with signatures and descriptions>
-<!-- raptor:end:exports -->
-```
-
-Only include sections that have real content. If no routes were found, omit the routes section entirely.
-
----
-
-### docs/docstrings.md template
-
-```
-<!-- raptor:start:overview -->
-# Docstrings Reference
-
-Functions and classes extracted from the codebase, with descriptions.
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:symbols -->
-## Symbol Inventory
-
-<for each file with symbols: file path as H3, then each function/class name with its inferred description based on name, parameters, and context>
-<!-- raptor:end:symbols -->
-```
-
----
-
-### docs/OPERATIONS.md template
-
-```
-<!-- raptor:start:overview -->
-# Operations
-
-## Overview
-
-<how to run and operate the system in dev/staging/prod>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:runtime -->
-## Runtime Requirements
-
-<required runtimes, services, and external dependencies>
-<!-- raptor:end:runtime -->
-
-<!-- raptor:start:deploy -->
-## Deployment
-
-<build, release, and deployment workflow>
-<!-- raptor:end:deploy -->
-
-<!-- raptor:start:monitoring -->
-## Monitoring & Logging
-
-<health checks, logs, metrics, alerting basics>
-<!-- raptor:end:monitoring -->
-
-<!-- raptor:start:incidents -->
-## Incident Response
-
-<common failure modes, rollback, recovery checklist>
-<!-- raptor:end:incidents -->
-```
-
----
-
-### docs/SECURITY.md template
-
-```
-<!-- raptor:start:overview -->
-# Security
-
-## Overview
-
-<security model and trust boundaries>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:auth -->
-## Authentication & Authorization
-
-<auth flow, role model, and access control summary>
-<!-- raptor:end:auth -->
-
-<!-- raptor:start:secrets -->
-## Secrets & Configuration
-
-<where secrets live, how they are injected, what must never be committed>
-<!-- raptor:end:secrets -->
-
-<!-- raptor:start:data -->
-## Data Protection
-
-<sensitive data handling, encryption, retention, and audit notes>
-<!-- raptor:end:data -->
-
-<!-- raptor:start:hardening -->
-## Hardening Checklist
-
-<concrete controls and checks to run before release>
-<!-- raptor:end:hardening -->
-```
-
----
-
-### docs/CONTRIBUTING.md template
-
-```
-<!-- raptor:start:overview -->
-# Contributing
-
-## Overview
-
-<how contributors should work in this repository>
-<!-- raptor:end:overview -->
-
-<!-- raptor:start:setup -->
-## Local Setup
-
-<dev setup steps and prerequisites>
-<!-- raptor:end:setup -->
-
-<!-- raptor:start:workflow -->
-## Development Workflow
-
-<branching model, commit style, PR flow>
-<!-- raptor:end:workflow -->
-
-<!-- raptor:start:quality -->
-## Quality Gates
-
-<tests/lint/build checks required before merge>
-<!-- raptor:end:quality -->
-
-<!-- raptor:start:review -->
-## Review Guidelines
-
-<code review expectations and acceptance criteria>
-<!-- raptor:end:review -->
-```
-
----
-
-### llms.txt template
-
-Generate this last, referencing all the docs just written.
-
-```
-# <project-name>
-
-> <one-sentence summary of what the project is>
-
-<2-3 sentences of context for an AI assistant reading this file>
-
-## Documentation
-
-- [README](./README.md): Project overview, installation, and usage
-- [Architecture](./docs/ARCHITECTURE.md): System design, module structure, and data flow
-- [API Reference](./docs/api.md): HTTP routes and exported functions
-- [Docstrings](./docs/docstrings.md): Symbol inventory with descriptions
-- [Operations](./docs/OPERATIONS.md): Runtime, deploy, and incident guidance
-- [Security](./docs/SECURITY.md): Authentication, secrets, and hardening controls
-- [Contributing](./docs/CONTRIBUTING.md): Development workflow and quality gates
-
-## Source
-
-- [Entry Point](./<entry-point>): Main application entry
-```
-
-Only include links to files that were actually generated.
+Use the returned pages, excerpts, symbols, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
 
 ---
 
@@ -384,20 +104,18 @@ Only include links to files that were actually generated.
 After all documents are written, show a final summary:
 
 ```
-✅ Raptor documentation complete
+✅ Raptor wiki complete
 
 Generated:
-  • README.md              (created / updated)
-  • docs/ARCHITECTURE.md   (created / updated)
-  • docs/api.md            (created / updated)
-  • docs/docstrings.md     (created / updated)
-  • docs/OPERATIONS.md     (created / updated)
-  • docs/SECURITY.md       (created / updated)
-  • docs/CONTRIBUTING.md   (created / updated)
-  • llms.txt               (created / updated)
+  • .raptor/wiki/*.md
+  • .raptor/index/chunks.jsonl
+  • .raptor/index/symbols.jsonl
+  • .raptor/index/links.json
+  • .raptor/manifest.json
+  • llms.txt
+  • llms-full.txt
 
-Language: <language>
-Mode: full generation / merge
+Validation: passed / warnings / failed
 ```
 
 If any `raptor write` command failed, report the error clearly.
@@ -410,6 +128,6 @@ If any `raptor write` command failed, report the error clearly.
 - **Path does not exist**: Confirm the path with the user, stop.
 - **Write permission denied**: Report the error from doctor, stop.
 - **Empty analysis** (0 files found): Warn the user the directory may be empty or fully excluded.
-- **GitHub mode, write requested**: Explain that GitHub mode is read-only; instruct user to clone and run locally.
+- **Index missing for query**: Run `raptor wiki build --json` first.
 - **No git repo**: Inform the user incremental update is unavailable; proceed with full regeneration.
-- **Existing docs without raptor markers**: Warn that files will be backed up as `<filename>.raptor-backup` before overwriting; ask confirmation.
+- **Stale wiki pages**: Run `raptor wiki build --json`, then `raptor wiki validate --json`.

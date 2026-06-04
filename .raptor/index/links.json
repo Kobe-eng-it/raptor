@@ -1,0 +1,44 @@
+{
+  "page_to_page": {
+    "overview.md": [],
+    "architecture.md": [
+      "overview.md",
+      "symbols.md"
+    ],
+    "entrypoints.md": [],
+    "symbols.md": [],
+    "documentation.md": []
+  },
+  "page_to_sources": {
+    "overview.md": [
+      "package.json",
+      "README.md"
+    ],
+    "architecture.md": [
+      "package.json",
+      "bin/raptor.js"
+    ],
+    "entrypoints.md": [
+      "bin/raptor.js"
+    ],
+    "symbols.md": [
+      "src/analyze.js",
+      "src/diff.js",
+      "src/doctor.js",
+      "src/git.js",
+      "src/symbols.js",
+      "src/util.js",
+      "src/wiki.js",
+      "src/write.js",
+      "test/wiki.test.js"
+    ],
+    "documentation.md": [
+      "README.md",
+      "docs/api.md",
+      "docs/ARCHITECTURE.md",
+      "docs/docstrings.md",
+      "llms.txt",
+      "llms-full.txt"
+    ]
+  }
+}

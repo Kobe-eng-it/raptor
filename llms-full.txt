@@ -1,0 +1,291 @@
+# Raptor Wiki Full Export
+
+This file concatenates the local `.raptor/wiki` pages for tools that prefer a single Markdown context file.
+
+<!-- source: .raptor/wiki/architecture.md -->
+
+---
+status: draft
+source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
+last_generated: 2026-06-04T10:18:46.642Z
+sources: 
+  - package.json
+  - bin/raptor.js
+source_hashes: 
+  package.json: 8691437094f0294e
+  bin/raptor.js: 99411be5e01d44d4
+confidence: medium
+---
+
+# Architecture
+
+## Module Structure
+
+- `docs/`
+- `llms-full.txt/`
+- `llms.txt/`
+- `package.json/`
+- `README.md/`
+- `setup.ps1/`
+- `setup.sh/`
+- `skill/`
+- `src/`
+- `test/`
+- `todo.md/`
+
+## Entry Points
+
+- [bin/raptor.js](../../bin/raptor.js)
+
+## Data Flow
+
+Raptor inferred the architecture from local source files, package metadata, entry points, and exported symbols. Treat this page as a reviewable draft until a human marks it reviewed.
+
+## Related Pages
+
+- [Project Overview](overview.md)
+- [Symbols](symbols.md)
+
+<!-- source: .raptor/wiki/documentation.md -->
+
+---
+status: draft
+source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
+last_generated: 2026-06-04T10:18:46.726Z
+sources: 
+  - README.md
+  - docs/api.md
+  - docs/ARCHITECTURE.md
+  - docs/docstrings.md
+source_hashes: 
+  README.md: 01e6a99d0fc184ac
+  docs/api.md: 1bfd3feef494fefa
+  docs/ARCHITECTURE.md: 43dc6997de5991cd
+  docs/docstrings.md: 6595c17ff9f521ec
+confidence: high
+---
+
+# Documentation Map
+
+## Existing Documentation
+
+- [README.md](../../README.md)
+- [docs/api.md](../../docs/api.md)
+- [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md)
+- [docs/docstrings.md](../../docs/docstrings.md)
+
+## Exported Indexes
+
+- [llms.txt](../../llms.txt)
+- [llms-full.txt](../../llms-full.txt)
+
+<!-- source: .raptor/wiki/entrypoints.md -->
+
+---
+status: draft
+source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
+last_generated: 2026-06-04T10:18:46.668Z
+sources: 
+  - bin/raptor.js
+source_hashes: 
+  bin/raptor.js: 99411be5e01d44d4
+confidence: high
+---
+
+# Entrypoints
+
+## Detected Entrypoints
+
+- [bin/raptor.js](../../bin/raptor.js)
+
+## Notes
+
+These files are likely startup, command-line, or application entrypoints based on conventional filenames. For CLI projects, the entrypoint is the file launched by the package binary or shell wrapper.
+
+<!-- source: .raptor/wiki/overview.md -->
+
+---
+status: draft
+source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
+last_generated: 2026-06-04T10:18:46.606Z
+sources: 
+  - package.json
+  - README.md
+source_hashes: 
+  package.json: 8691437094f0294e
+  README.md: 01e6a99d0fc184ac
+confidence: high
+---
+
+# Project Overview
+
+## Summary
+
+CLI for AI-driven codebase documentation generation
+
+## Package
+
+- Name: raptor-docgen
+- Version: 0.1.0
+- Source: package.json
+
+## Stack
+
+- JavaScript: 9 files (47%)
+- Markdown: 7 files (37%)
+- JSON: 1 files (5%)
+- PowerShell: 1 files (5%)
+- Shell: 1 files (5%)
+
+## Framework
+
+None detected.
+
+## Source References
+
+- [package.json](../../package.json)
+- [README.md](../../README.md)
+
+<!-- source: .raptor/wiki/symbols.md -->
+
+---
+status: draft
+source_commit: 29bc14ead807a59d36f337eb7b0eb97ba13f34c3
+last_generated: 2026-06-04T10:18:46.680Z
+sources: 
+  - src/analyze.js
+  - src/diff.js
+  - src/doctor.js
+  - src/git.js
+  - src/symbols.js
+  - src/util.js
+  - src/wiki.js
+  - src/write.js
+  - test/wiki.test.js
+source_hashes: 
+  src/analyze.js: a19090ef105694df
+  src/diff.js: f873e4e114325763
+  src/doctor.js: c97c2e2154cc4c78
+  src/git.js: dd6e162228aac497
+  src/symbols.js: 3eb92f85261b3da5
+  src/util.js: 3e444c0973d2248d
+  src/wiki.js: 4be74a0d8843116f
+  src/write.js: 5a50000107c48217
+  test/wiki.test.js: a91b79b71bb2b580
+confidence: medium
+---
+
+# Symbols
+
+## Symbol Inventory
+
+### src/analyze.js
+
+- `readDeepContent` (function)
+- `analyze` (function)
+- `module.exports` (commonjs-export)
+
+### src/diff.js
+
+- `diff` (function)
+- `module.exports` (commonjs-export)
+
+### src/doctor.js
+
+- `checkTool` (function)
+- `checkWritePermission` (function)
+- `checkGitRepo` (function)
+- `doctor` (function)
+- `module.exports` (commonjs-export)
+
+### src/git.js
+
+- `runGit` (function)
+- `findGitDir` (function)
+- `gitRootFromDir` (function)
+- `readHeadCommitFromGitDir` (function)
+- `slashRef` (function)
+- `hasGitRepo` (function)
+- `getGitRoot` (function)
+- `getHeadCommit` (function)
+- `listChangedFiles` (function)
+- `module.exports` (commonjs-export)
+
+### src/symbols.js
+
+- `pushSymbol` (function)
+- `extractJavaScriptSymbols` (function)
+- `extractPythonSymbols` (function)
+- `extractGoSymbols` (function)
+- `dedupeSymbols` (function)
+- `extractSymbols` (function)
+- `isSymbolFile` (function)
+- `module.exports` (commonjs-export)
+
+### src/util.js
+
+- `walkDir` (function)
+- `detectLanguages` (function)
+- `detectFramework` (function)
+- `getPackageInfo` (function)
+- `getEntryPoints` (function)
+- `checkExistingDocs` (function)
+- `hasGitRepo` (function)
+- `output` (function)
+- `outputError` (function)
+- `module.exports` (commonjs-export)
+
+### src/wiki.js
+
+- `nowIso` (function)
+- `slash` (function)
+- `sha256` (function)
+- `fileHash` (function)
+- `readText` (function)
+- `ensureRaptor` (function)
+- `parsePathArg` (function)
+- `markdownList` (function)
+- `yamlValue` (function)
+- `createFrontmatter` (function)
+- `parseFrontmatter` (function)
+- `sourceHashes` (function)
+- `writePage` (function)
+- `buildContext` (function)
+- `makeMeta` (function)
+- `createPages` (function)
+- `pageTitle` (function)
+- `createChunks` (function)
+- `createLinks` (function)
+- `writeJsonl` (function)
+- `writeIndexes` (function)
+- `writeManifest` (function)
+- `writeLlmsExports` (function)
+- `wikiInit` (function)
+- `wikiBuild` (function)
+- `listWikiPages` (function)
+- `validatePage` (function)
+- `wikiValidate` (function)
+- `wikiStatus` (function)
+- `tokenize` (function)
+- `loadJsonl` (function)
+- `parseQueryArgs` (function)
+- `snippet` (function)
+- `query` (function)
+- `wiki` (function)
+- `module.exports` (commonjs-export)
+
+### src/write.js
+
+- `mergeContent` (function)
+- `write` (function)
+- `START_MARKER` (function)
+- `END_MARKER` (function)
+- `module.exports` (commonjs-export)
+
+### test/wiki.test.js
+
+- `tempRepo` (function)
+- `capture` (function)
+- `main` (commonjs-export)
+- `extra` (commonjs-export)
+
