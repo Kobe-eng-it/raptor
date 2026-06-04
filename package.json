@@ -1,0 +1,23 @@
+{
+  "name": "raptor-docgen",
+  "version": "0.1.0",
+  "description": "CLI for AI-driven codebase documentation generation",
+  "bin": {
+    "raptor": "./bin/raptor.js"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "documentation",
+    "codegen",
+    "ai",
+    "copilot",
+    "llms-txt"
+  ],
+  "license": "MIT"
+}
