@@ -47,6 +47,7 @@
       "docs/api.md",
       "docs/ARCHITECTURE.md",
       "docs/docstrings.md",
+      "docs/STATUS.md",
       "llms.txt",
       "llms-full.txt"
     ]

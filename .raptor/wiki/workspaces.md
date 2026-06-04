@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 46042b7567f443314aa7d545ed8823313829b050
-last_generated: 2026-06-04T16:11:35.107Z
+source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
+last_generated: 2026-06-04T16:28:56.403Z
 sources: 
   - package.json
   - bin/raptor.js

@@ -1,17 +1,19 @@
 ---
 status: reviewed
-source_commit: 46042b7567f443314aa7d545ed8823313829b050
-last_generated: 2026-06-04T16:11:35.165Z
+source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
+last_generated: 2026-06-04T16:28:56.460Z
 sources: 
   - README.md
   - docs/api.md
   - docs/ARCHITECTURE.md
   - docs/docstrings.md
+  - docs/STATUS.md
 source_hashes: 
   README.md: 01e6a99d0fc184ac
   docs/api.md: 1bfd3feef494fefa
   docs/ARCHITECTURE.md: 43dc6997de5991cd
   docs/docstrings.md: 6595c17ff9f521ec
+  docs/STATUS.md: b7eb76628be01768
 confidence: high
 ---
 
@@ -23,6 +25,7 @@ confidence: high
 - [docs/api.md](../../docs/api.md)
 - [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md)
 - [docs/docstrings.md](../../docs/docstrings.md)
+- [docs/STATUS.md](../../docs/STATUS.md)
 
 ## Exported Indexes
 
