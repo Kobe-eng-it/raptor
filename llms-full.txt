@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.278Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.479Z
 sources: 
   - package.json
   - bin/raptor.js
@@ -51,8 +51,8 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.358Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.551Z
 sources: 
   - README.md
   - docs/api.md
@@ -84,8 +84,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.312Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.509Z
 sources: 
   - bin/raptor.js
 source_hashes: 
@@ -109,8 +109,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.253Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.457Z
 sources: 
   - package.json
   - README.md
@@ -153,8 +153,8 @@ None detected.
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.323Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.518Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -340,8 +340,8 @@ confidence: medium
 
 ---
 status: draft
-source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
-last_generated: 2026-06-04T15:39:34.293Z
+source_commit: 26d2ac4c9360d51b751ce0e90fa64abc34cd3818
+last_generated: 2026-06-04T15:46:33.495Z
 sources: 
   - package.json
   - bin/raptor.js

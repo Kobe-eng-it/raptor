@@ -91,7 +91,9 @@ Raptor uses soft gates:
 
 ## Phase 4 — Query
 
-When the user asks a codebase question, query the wiki first:
+When the user asks a codebase question, query the wiki first.
+
+For quick lookup questions, use the human-readable output:
 
 ```bash
 raptor query "<question>"
@@ -99,7 +101,7 @@ raptor query "<question>"
 
 Use non-JSON output for user-facing answers because it surfaces the best match and source paths directly.
 
-Use JSON output when the agent needs structured grounding:
+For procedural, diagnostic, or implementation questions, use JSON output and inspect sources before answering. Procedural questions often start with words such as "how", "come", "where", "dove", "why", "perche", "what calls", "come si crea", "come funziona", or "dove viene gestito".
 
 ```bash
 raptor query "<question>" --json
@@ -107,7 +109,21 @@ raptor query "<question>" --json
 
 Use the returned pages, excerpts, symbols, sources, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
 
-For procedural questions such as "Come si crea un'utenza?", query Raptor first, then inspect the returned wiki page and source paths if the excerpt is not enough to answer. Answer in the user's language and cite the relevant wiki page plus source file paths.
+### Source-Grounded Answer Workflow
+
+For questions such as "Come si crea un'utenza?", do not stop at the Raptor query result. Use this workflow:
+
+1. Run `raptor query "<question>" --json`.
+2. Read the top returned wiki page under `.raptor/wiki/`.
+3. Read the top 3-5 source paths from `result.symbols[].path` and `result.results[].sources`, preferring symbol paths first.
+4. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
+5. Answer in the user's language with:
+   - the shortest procedural explanation that fits the evidence;
+   - the key files and symbols involved;
+   - any endpoint, command, method, or component names found;
+   - an explicit caveat if Raptor found likely files but the exact workflow is not fully visible.
+
+Never claim a workflow is complete unless the inspected files show the full path from entrypoint/caller to implementation. If the result only identifies a likely service or symbol, say that clearly and suggest the next file to inspect.
 
 ---
 
