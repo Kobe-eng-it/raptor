@@ -230,6 +230,24 @@ test('query expands Italian procedural account questions', () => {
   assert.ok(text.includes('Answer: src/users/create-user.js (function createUser)'));
 });
 
+test('query sources do not use paths truncated by excerpts', () => {
+  const dir = tempRepo();
+  fs.mkdirSync(path.join(dir, 'src', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), { recursive: true });
+  const relPath = 'src/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/create-user.js';
+  fs.writeFileSync(
+    path.join(dir, relPath),
+    'function createUser(input) { return { id: input.id }; }\nmodule.exports = { createUser };\n',
+    'utf8',
+  );
+  capture(() => wiki(['build', dir, '--json']));
+
+  const result = capture(() => query(['Come si crea un utenza?', dir, '--json']));
+  const sourcePaths = result.result.results.flatMap(row => row.sources);
+
+  assert.ok(sourcePaths.includes(relPath));
+  assert.ok(!sourcePaths.some(source => source === 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/create-user.js'));
+});
+
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
   assert.deepEqual(tokenize('Come si crea un utenza?'), ['crea', 'utenza']);

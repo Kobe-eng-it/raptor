@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.287Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.278Z
 sources: 
   - package.json
   - bin/raptor.js
@@ -51,8 +51,8 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.769Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.358Z
 sources: 
   - README.md
   - docs/api.md
@@ -84,8 +84,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.334Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.312Z
 sources: 
   - bin/raptor.js
 source_hashes: 
@@ -109,8 +109,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.256Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.253Z
 sources: 
   - package.json
   - README.md
@@ -153,8 +153,8 @@ None detected.
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.349Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.323Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -173,10 +173,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: ba6d564a73b16c64
+  src/wiki.js: f4a498e63c48b506
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: cebf304da2e20d59
+  test/wiki.test.js: ddb1771f60c28dff
 confidence: medium
 ---
 
@@ -340,8 +340,8 @@ confidence: medium
 
 ---
 status: draft
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.306Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.293Z
 sources: 
   - package.json
   - bin/raptor.js

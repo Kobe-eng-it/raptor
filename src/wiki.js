@@ -844,7 +844,8 @@ function formatQueryText(data) {
 
   lines.push('', 'Top results:');
   for (const result of data.results.slice(0, 5)) {
-    const sourceSuffix = result.sources.length ? ` -> ${result.sources[0]}` : '';
+    const displaySource = result.page === 'symbols.md' && data.symbols.length ? data.symbols[0].path : result.sources[0];
+    const sourceSuffix = displaySource ? ` -> ${displaySource}` : '';
     lines.push(`- ${result.page} / ${result.heading} (${result.status}, score ${result.score})${sourceSuffix}`);
   }
 
@@ -916,14 +917,13 @@ function query(argv) {
     if (startupRelated && chunk.page === 'symbols.md') score -= 50;
     if (chunk.status !== 'reviewed') score -= 0.25;
     const excerpt = snippet(chunk.text, terms);
-    const excerptSources = extractSourcePaths(excerpt);
     return {
       page: chunk.page,
       heading: chunk.heading,
       status: chunk.status,
       score,
       excerpt,
-      sources: excerptSources.length ? excerptSources : extractSourcePaths(chunk.text),
+      sources: extractSourcePaths(chunk.text),
     };
   }).filter(result => result.score > 0)
     .sort((a, b) => b.score - a.score)

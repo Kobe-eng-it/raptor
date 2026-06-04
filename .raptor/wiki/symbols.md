@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 2e3af18317c86595967917173360ae76617445c4
-last_generated: 2026-06-04T15:27:21.349Z
+source_commit: 02d86fb971bc61a0b7511e8c2a486f4c1770d865
+last_generated: 2026-06-04T15:39:34.323Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -20,10 +20,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: ba6d564a73b16c64
+  src/wiki.js: f4a498e63c48b506
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: cebf304da2e20d59
+  test/wiki.test.js: ddb1771f60c28dff
 confidence: medium
 ---
 
