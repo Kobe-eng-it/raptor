@@ -152,6 +152,17 @@ test('query ranks workspace entrypoint chunks for frontend app questions', () =>
   assert.ok(result.result.warnings[0].includes('non-reviewed'));
 });
 
+test('query treats app started questions as startup queries', () => {
+  const dir = nestedFrontendRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  const result = capture(() => query(['where is the app started?', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.ok(['entrypoints.md', 'workspaces.md'].includes(result.result.results[0].page));
+  assert.notEqual(result.result.results[0].page, 'symbols.md');
+  assert.ok(result.result.results.some(row => row.excerpt.includes('frontend/gui/src/main.tsx')));
+});
+
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
 });

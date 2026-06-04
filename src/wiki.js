@@ -691,7 +691,14 @@ function query(argv) {
   }
 
   const terms = tokenize(question);
-  const launchTerms = new Set(['workspace', 'workspaces', 'frontend', 'backend', 'app', 'entrypoint', 'entrypoints', 'start', 'startup', 'dev', 'serve']);
+  const launchTerms = new Set([
+    'workspace', 'workspaces', 'frontend', 'backend', 'app',
+    'entrypoint', 'entrypoints', 'start', 'started', 'starts', 'startup',
+    'run', 'runs', 'launch', 'launched', 'bootstrap', 'bootstrapped',
+    'dev', 'serve',
+  ]);
+  const startupTerms = new Set(['entrypoint', 'entrypoints', 'start', 'started', 'starts', 'startup', 'run', 'runs', 'launch', 'launched', 'bootstrap', 'bootstrapped']);
+  const startupRelated = terms.some(term => startupTerms.has(term));
   const chunks = loadJsonl(chunksPath);
   const symbols = loadJsonl(path.join(targetPath, INDEX_DIR, 'symbols.jsonl'));
   const symbolHits = symbols.filter(symbol => terms.some(term => symbol.name.toLowerCase().includes(term) || symbol.path.toLowerCase().includes(term)));
@@ -715,6 +722,9 @@ function query(argv) {
       if (launchTerms.has(term) && ['entrypoints.md', 'workspaces.md'].includes(chunk.page)) score += 18;
       if (['entrypoints.md', 'workspaces.md'].includes(chunk.page) && haystacks.text.some(token => token.includes('/') && token.includes(term))) score += 12;
     }
+    if (startupRelated && chunk.page === 'entrypoints.md') score += 40;
+    if (startupRelated && chunk.page === 'workspaces.md') score += 20;
+    if (startupRelated && chunk.page === 'symbols.md') score -= 50;
     if (chunk.status !== 'reviewed') score -= 0.25;
     return {
       page: chunk.page,
