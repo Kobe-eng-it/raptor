@@ -713,10 +713,47 @@ function wikiReview(argv) {
   output({ path: targetPath, reviewed, skipped, index: { chunks } }, json);
 }
 
+const QUERY_STOPWORDS = new Set([
+  'a', 'an', 'and', 'are', 'as', 'at', 'for', 'from', 'how', 'in', 'is', 'of', 'on', 'or', 'the', 'to', 'where',
+  'che', 'chi', 'come', 'con', 'cosa', 'da', 'dei', 'del', 'della', 'delle', 'di', 'gli', 'il', 'la', 'le', 'lo',
+  'nel', 'nella', 'per', 'si', 'un', 'una', 'uno',
+]);
+
+const QUERY_SYNONYMS = {
+  aggiunge: ['add', 'create'],
+  aggiungere: ['add', 'create'],
+  crea: ['create', 'add', 'new'],
+  creare: ['create', 'add', 'new'],
+  creazione: ['create', 'creation', 'new'],
+  nuova: ['new', 'create'],
+  nuovo: ['new', 'create'],
+  registra: ['register', 'signup', 'create'],
+  registrare: ['register', 'signup', 'create'],
+  account: ['user', 'users', 'profile', 'auth', 'authentication'],
+  profilo: ['profile', 'user', 'account'],
+  utenza: ['user', 'users', 'account', 'accounts', 'profile', 'profiles', 'auth', 'authentication'],
+  utenze: ['user', 'users', 'account', 'accounts', 'profile', 'profiles', 'auth', 'authentication'],
+  utente: ['user', 'users', 'account', 'accounts', 'profile', 'profiles', 'auth', 'authentication'],
+  utenti: ['user', 'users', 'account', 'accounts', 'profile', 'profiles', 'auth', 'authentication'],
+};
+
 function tokenize(value) {
-  const stopwords = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'for', 'from', 'how', 'in', 'is', 'of', 'on', 'or', 'the', 'to', 'where']);
   return String(value).toLowerCase().split(/[^a-z0-9_./-]+/)
-    .filter(token => token.length > 1 && !stopwords.has(token));
+    .filter(token => token.length > 1 && !QUERY_STOPWORDS.has(token));
+}
+
+function expandQueryTerms(terms) {
+  const expanded = [];
+  const seen = new Set();
+  for (const term of terms) {
+    const additions = [term, ...(QUERY_SYNONYMS[term] || [])];
+    for (const addition of additions) {
+      if (seen.has(addition)) continue;
+      seen.add(addition);
+      expanded.push(addition);
+    }
+  }
+  return expanded;
 }
 
 function loadJsonl(filePath) {
@@ -756,6 +793,19 @@ function hasSourcePath(text) {
   return /[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go)\b/.test(text);
 }
 
+function scoreSymbol(symbol, terms) {
+  const name = symbol.name.toLowerCase();
+  const sourcePath = symbol.path.toLowerCase();
+  let score = 0;
+  for (const term of terms) {
+    if (name === term) score += 100;
+    else if (name.startsWith(term)) score += 40;
+    else if (name.includes(term)) score += 20;
+    if (sourcePath.includes(term)) score += 5;
+  }
+  return score;
+}
+
 function extractSourcePaths(text) {
   const sources = [];
   const seen = new Set();
@@ -782,8 +832,11 @@ function formatQueryText(data) {
   }
 
   const best = data.results[0];
+  const bestSymbol = best.page === 'symbols.md' ? data.symbols[0] : null;
   lines.push('', `Best match: ${best.page} / ${best.heading} (${best.status})`);
-  if (best.sources.length) {
+  if (bestSymbol) {
+    lines.push(`Answer: ${bestSymbol.path} (${bestSymbol.kind} ${bestSymbol.name})`);
+  } else if (best.sources.length) {
     lines.push(`Answer: ${best.sources[0]}`);
   } else {
     lines.push(`Answer: ${best.excerpt}`);
@@ -795,7 +848,10 @@ function formatQueryText(data) {
     lines.push(`- ${result.page} / ${result.heading} (${result.status}, score ${result.score})${sourceSuffix}`);
   }
 
-  const sourcePaths = [...new Set(data.results.flatMap(result => result.sources))].slice(0, 8);
+  const sourcePaths = [...new Set([
+    ...data.symbols.map(symbol => symbol.path),
+    ...data.results.flatMap(result => result.sources),
+  ])].slice(0, 8);
   if (sourcePaths.length) {
     lines.push('', 'Sources:');
     for (const source of sourcePaths) lines.push(`- ${source}`);
@@ -817,7 +873,7 @@ function query(argv) {
     return outputError('Raptor wiki index not found. Run "raptor wiki build" first.', json);
   }
 
-  const terms = tokenize(question);
+  const terms = expandQueryTerms(tokenize(question));
   const launchTerms = new Set([
     'workspace', 'workspaces', 'frontend', 'backend', 'app',
     'entrypoint', 'entrypoints', 'start', 'started', 'starts', 'startup',
@@ -828,7 +884,11 @@ function query(argv) {
   const startupRelated = terms.some(term => startupTerms.has(term));
   const chunks = loadJsonl(chunksPath);
   const symbols = loadJsonl(path.join(targetPath, INDEX_DIR, 'symbols.jsonl'));
-  const symbolHits = symbols.filter(symbol => terms.some(term => symbol.name.toLowerCase().includes(term) || symbol.path.toLowerCase().includes(term)));
+  const symbolHits = symbols
+    .map(symbol => ({ ...symbol, _score: scoreSymbol(symbol, terms) }))
+    .filter(symbol => symbol._score > 0)
+    .sort((a, b) => b._score - a._score)
+    .map(({ _score, ...symbol }) => symbol);
 
   const results = chunks.map(chunk => {
     const haystacks = {
@@ -855,13 +915,15 @@ function query(argv) {
     if (startupRelated && chunk.heading.toLowerCase() === 'notes') score -= 35;
     if (startupRelated && chunk.page === 'symbols.md') score -= 50;
     if (chunk.status !== 'reviewed') score -= 0.25;
+    const excerpt = snippet(chunk.text, terms);
+    const excerptSources = extractSourcePaths(excerpt);
     return {
       page: chunk.page,
       heading: chunk.heading,
       status: chunk.status,
       score,
-      excerpt: snippet(chunk.text, terms),
-      sources: extractSourcePaths(chunk.text),
+      excerpt,
+      sources: excerptSources.length ? excerptSources : extractSourcePaths(chunk.text),
     };
   }).filter(result => result.score > 0)
     .sort((a, b) => b.score - a.score)

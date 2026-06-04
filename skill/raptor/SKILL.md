@@ -75,6 +75,7 @@ After validation, present a concise table:
 |-----------|--------|-------|
 | `.raptor/wiki/overview.md` | draft/reviewed/stale | validation notes |
 | `.raptor/wiki/architecture.md` | draft/reviewed/stale | validation notes |
+| `.raptor/wiki/workspaces.md` | draft/reviewed/stale | validation notes |
 | `.raptor/wiki/entrypoints.md` | draft/reviewed/stale | validation notes |
 | `.raptor/wiki/symbols.md` | draft/reviewed/stale | validation notes |
 | `.raptor/wiki/documentation.md` | draft/reviewed/stale | validation notes |
@@ -83,6 +84,7 @@ Raptor uses soft gates:
 
 - Queries may run against `draft` or `stale` pages.
 - Always disclose when query results include non-reviewed or stale pages.
+- If the user approves the generated wiki, run `raptor wiki review --all --json` and then `raptor wiki status --json`.
 - Do not copy wiki content into `docs/` in this increment unless the user explicitly asks for README/llms exports.
 
 ---
@@ -92,10 +94,20 @@ Raptor uses soft gates:
 When the user asks a codebase question, query the wiki first:
 
 ```bash
+raptor query "<question>"
+```
+
+Use non-JSON output for user-facing answers because it surfaces the best match and source paths directly.
+
+Use JSON output when the agent needs structured grounding:
+
+```bash
 raptor query "<question>" --json
 ```
 
-Use the returned pages, excerpts, symbols, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
+Use the returned pages, excerpts, symbols, sources, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
+
+For procedural questions such as "Come si crea un'utenza?", query Raptor first, then inspect the returned wiki page and source paths if the excerpt is not enough to answer. Answer in the user's language and cite the relevant wiki page plus source file paths.
 
 ---
 

@@ -1,10 +1,10 @@
 {
   "schema_version": "v0.1.0",
-  "source_commit": "dc896b2f20b98dba4ac8d1dbffd1729eaca8a256",
-  "generated_at": "2026-06-04T15:08:16.310Z",
+  "source_commit": "2e3af18317c86595967917173360ae76617445c4",
+  "generated_at": "2026-06-04T15:27:21.865Z",
   "wiki_pages": 6,
   "index": {
     "chunks": 24,
-    "symbols": 119
+    "symbols": 122
   }
 }

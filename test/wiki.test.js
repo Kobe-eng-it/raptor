@@ -210,9 +210,29 @@ test('query without json prints a human-readable answer with sources', () => {
   assert.ok(!text.includes('Results include non-reviewed pages'));
 });
 
+test('query expands Italian procedural account questions', () => {
+  const dir = tempRepo();
+  fs.mkdirSync(path.join(dir, 'src', 'users'), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, 'src', 'users', 'create-user.js'),
+    'function createUser(input) { return { id: input.id }; }\nmodule.exports = { createUser };\n',
+    'utf8',
+  );
+  capture(() => wiki(['build', dir, '--json']));
+
+  const result = capture(() => query(['Come si crea un utenza?', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.ok(result.result.symbols.some(symbol => symbol.path === 'src/users/create-user.js' && symbol.name === 'createUser'));
+  assert.ok(result.result.results.some(row => row.excerpt.includes('createUser') || row.sources.includes('src/users/create-user.js')));
+
+  const text = captureText(() => query(['Come si crea un utenza?', dir]));
+  assert.ok(text.includes('Answer: src/users/create-user.js (function createUser)'));
+});
 
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
+  assert.deepEqual(tokenize('Come si crea un utenza?'), ['crea', 'utenza']);
 });
 
 test('walkDir handles wide directories without spreading into push arguments', () => {

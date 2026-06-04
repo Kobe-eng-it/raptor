@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: dc896b2f20b98dba4ac8d1dbffd1729eaca8a256
-last_generated: 2026-06-04T15:08:15.991Z
+source_commit: 2e3af18317c86595967917173360ae76617445c4
+last_generated: 2026-06-04T15:27:21.349Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -20,10 +20,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 5ff7c2e209851fd2
+  src/wiki.js: ba6d564a73b16c64
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: c599f2a75522ed86
+  test/wiki.test.js: cebf304da2e20d59
 confidence: medium
 ---
 
@@ -129,10 +129,12 @@ confidence: medium
 - `writeReviewedPage` (function)
 - `wikiReview` (function)
 - `tokenize` (function)
+- `expandQueryTerms` (function)
 - `loadJsonl` (function)
 - `parseQueryArgs` (function)
 - `snippet` (function)
 - `hasSourcePath` (function)
+- `scoreSymbol` (function)
 - `extractSourcePaths` (function)
 - `formatQueryText` (function)
 - `query` (function)
@@ -177,5 +179,6 @@ confidence: medium
 - `nestedFrontendRepo` (function)
 - `capture` (function)
 - `captureText` (function)
+- `module.exports` (commonjs-export)
 - `main` (commonjs-export)
 - `extra` (commonjs-export)
