@@ -160,6 +160,7 @@ test('query treats app started questions as startup queries', () => {
   assert.equal(result.ok, true);
   assert.ok(['entrypoints.md', 'workspaces.md'].includes(result.result.results[0].page));
   assert.notEqual(result.result.results[0].page, 'symbols.md');
+  assert.notEqual(result.result.results[0].heading, 'Notes');
   assert.ok(result.result.results.some(row => row.excerpt.includes('frontend/gui/src/main.tsx')));
 });
 

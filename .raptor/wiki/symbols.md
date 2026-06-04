@@ -1,7 +1,7 @@
 ---
 status: draft
-source_commit: 2c3ba785dcdd19c412546ac174959ac13c6b5cde
-last_generated: 2026-06-04T14:16:39.159Z
+source_commit: 788243df264461030b3b8de850d92c0dfb28d0b2
+last_generated: 2026-06-04T14:23:19.747Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -20,10 +20,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 46496e870a056bde
+  src/wiki.js: 66d6d7e6129f012a
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 9f793a0e90bd7fcf
+  test/wiki.test.js: 7e0a7902d0bb6f47
 confidence: medium
 ---
 
@@ -127,6 +127,7 @@ confidence: medium
 - `loadJsonl` (function)
 - `parseQueryArgs` (function)
 - `snippet` (function)
+- `hasSourcePath` (function)
 - `query` (function)
 - `wiki` (function)
 - `module.exports` (commonjs-export)

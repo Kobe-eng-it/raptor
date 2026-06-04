@@ -74,6 +74,7 @@
 {"path":"src/wiki.js","name":"loadJsonl","kind":"function"}
 {"path":"src/wiki.js","name":"parseQueryArgs","kind":"function"}
 {"path":"src/wiki.js","name":"snippet","kind":"function"}
+{"path":"src/wiki.js","name":"hasSourcePath","kind":"function"}
 {"path":"src/wiki.js","name":"query","kind":"function"}
 {"path":"src/wiki.js","name":"wiki","kind":"function"}
 {"path":"src/wiki.js","name":"module.exports","kind":"commonjs-export"}

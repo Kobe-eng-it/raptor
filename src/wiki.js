@@ -682,6 +682,10 @@ function snippet(text, terms) {
   return text.slice(index, index + 320).replace(/\s+/g, ' ').trim();
 }
 
+function hasSourcePath(text) {
+  return /[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go)\b/.test(text);
+}
+
 function query(argv) {
   const { json, targetPath, question } = parseQueryArgs(argv);
   if (!question) return outputError('query question is required', json);
@@ -724,6 +728,8 @@ function query(argv) {
     }
     if (startupRelated && chunk.page === 'entrypoints.md') score += 40;
     if (startupRelated && chunk.page === 'workspaces.md') score += 20;
+    if (startupRelated && ['entrypoints.md', 'workspaces.md'].includes(chunk.page) && hasSourcePath(chunk.text)) score += 35;
+    if (startupRelated && chunk.heading.toLowerCase() === 'notes') score -= 35;
     if (startupRelated && chunk.page === 'symbols.md') score -= 50;
     if (chunk.status !== 'reviewed') score -= 0.25;
     return {
