@@ -10,6 +10,9 @@ Raptor analyzes your codebase and generates structured, up-to-date documentation
 | Architecture | `docs/ARCHITECTURE.md` | System design, modules, data flow |
 | API Reference | `docs/api.md` | HTTP routes, exported functions and types |
 | Docstrings | `docs/docstrings.md` | Symbol inventory with inferred descriptions |
+| Operations | `docs/OPERATIONS.md` | Runtime, deploy, monitoring, incident basics |
+| Security | `docs/SECURITY.md` | Auth model, secrets handling, security controls |
+| Contributing | `docs/CONTRIBUTING.md` | Dev workflow, testing, branch and PR conventions |
 | LLM Index | `llms.txt` | [llms.txt](https://llmstxt.org) standard index |
 
 ---

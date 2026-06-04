@@ -11,6 +11,9 @@ const ALLOWED_OUTPUT_PATHS = new Set([
   path.join('docs', 'ARCHITECTURE.md'),
   path.join('docs', 'api.md'),
   path.join('docs', 'docstrings.md'),
+  path.join('docs', 'OPERATIONS.md'),
+  path.join('docs', 'SECURITY.md'),
+  path.join('docs', 'CONTRIBUTING.md'),
 ]);
 
 const START_MARKER = (id) => `<!-- raptor:start:${id} -->`;

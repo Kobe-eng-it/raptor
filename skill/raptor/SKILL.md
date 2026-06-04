@@ -1,6 +1,6 @@
 ---
 name: raptor
-description: "Generates comprehensive documentation for a codebase: README.md, docs/ARCHITECTURE.md, docs/api.md, docs/docstrings.md, and llms.txt. Use when the user asks to document a project, generate docs, run raptor, or mentions codebase documentation."
+description: "Generates comprehensive documentation for a codebase: README.md, docs/ARCHITECTURE.md, docs/api.md, docs/docstrings.md, docs/OPERATIONS.md, docs/SECURITY.md, docs/CONTRIBUTING.md, and llms.txt. Use when the user asks to document a project, generate docs, run raptor, or mentions codebase documentation."
 metadata:
   short-description: Codebase documentation generator
 ---
@@ -12,7 +12,7 @@ Generate comprehensive, structured documentation for any codebase. Reply in the 
 ## When To Use
 
 - User wants to generate or update project documentation
-- User wants a README, architecture doc, API reference, or llms.txt
+- User wants a README, architecture doc, API reference, operations/security docs, or llms.txt
 - User mentions "raptor", "generate docs", "document this project"
 
 ---
@@ -71,6 +71,9 @@ After analysis, present a **summary table** to the user:
 | Architecture | `docs/ARCHITECTURE.md` | ... |
 | API Reference | `docs/api.md` | ... |
 | Docstrings | `docs/docstrings.md` | ... |
+| Operations | `docs/OPERATIONS.md` | ... |
+| Security | `docs/SECURITY.md` | ... |
+| Contributing | `docs/CONTRIBUTING.md` | ... |
 | LLM Index | `llms.txt` | ... |
 
 Then ask:
@@ -90,7 +93,10 @@ Generate documents one at a time, in this order:
 2. `docs/ARCHITECTURE.md`
 3. `docs/api.md`
 4. `docs/docstrings.md`
-5. `llms.txt` (always last — it indexes the other docs)
+5. `docs/OPERATIONS.md`
+6. `docs/SECURITY.md`
+7. `docs/CONTRIBUTING.md`
+8. `llms.txt` (always last — it indexes the other docs)
 
 For each document, follow the template below. After generating, pipe the content into:
 - `echo "<content>" | raptor write --file <path>` for new files
@@ -229,6 +235,120 @@ Functions and classes extracted from the codebase, with descriptions.
 
 ---
 
+### docs/OPERATIONS.md template
+
+```
+<!-- raptor:start:overview -->
+# Operations
+
+## Overview
+
+<how to run and operate the system in dev/staging/prod>
+<!-- raptor:end:overview -->
+
+<!-- raptor:start:runtime -->
+## Runtime Requirements
+
+<required runtimes, services, and external dependencies>
+<!-- raptor:end:runtime -->
+
+<!-- raptor:start:deploy -->
+## Deployment
+
+<build, release, and deployment workflow>
+<!-- raptor:end:deploy -->
+
+<!-- raptor:start:monitoring -->
+## Monitoring & Logging
+
+<health checks, logs, metrics, alerting basics>
+<!-- raptor:end:monitoring -->
+
+<!-- raptor:start:incidents -->
+## Incident Response
+
+<common failure modes, rollback, recovery checklist>
+<!-- raptor:end:incidents -->
+```
+
+---
+
+### docs/SECURITY.md template
+
+```
+<!-- raptor:start:overview -->
+# Security
+
+## Overview
+
+<security model and trust boundaries>
+<!-- raptor:end:overview -->
+
+<!-- raptor:start:auth -->
+## Authentication & Authorization
+
+<auth flow, role model, and access control summary>
+<!-- raptor:end:auth -->
+
+<!-- raptor:start:secrets -->
+## Secrets & Configuration
+
+<where secrets live, how they are injected, what must never be committed>
+<!-- raptor:end:secrets -->
+
+<!-- raptor:start:data -->
+## Data Protection
+
+<sensitive data handling, encryption, retention, and audit notes>
+<!-- raptor:end:data -->
+
+<!-- raptor:start:hardening -->
+## Hardening Checklist
+
+<concrete controls and checks to run before release>
+<!-- raptor:end:hardening -->
+```
+
+---
+
+### docs/CONTRIBUTING.md template
+
+```
+<!-- raptor:start:overview -->
+# Contributing
+
+## Overview
+
+<how contributors should work in this repository>
+<!-- raptor:end:overview -->
+
+<!-- raptor:start:setup -->
+## Local Setup
+
+<dev setup steps and prerequisites>
+<!-- raptor:end:setup -->
+
+<!-- raptor:start:workflow -->
+## Development Workflow
+
+<branching model, commit style, PR flow>
+<!-- raptor:end:workflow -->
+
+<!-- raptor:start:quality -->
+## Quality Gates
+
+<tests/lint/build checks required before merge>
+<!-- raptor:end:quality -->
+
+<!-- raptor:start:review -->
+## Review Guidelines
+
+<code review expectations and acceptance criteria>
+<!-- raptor:end:review -->
+```
+
+---
+
 ### llms.txt template
 
 Generate this last, referencing all the docs just written.
@@ -246,6 +366,9 @@ Generate this last, referencing all the docs just written.
 - [Architecture](./docs/ARCHITECTURE.md): System design, module structure, and data flow
 - [API Reference](./docs/api.md): HTTP routes and exported functions
 - [Docstrings](./docs/docstrings.md): Symbol inventory with descriptions
+- [Operations](./docs/OPERATIONS.md): Runtime, deploy, and incident guidance
+- [Security](./docs/SECURITY.md): Authentication, secrets, and hardening controls
+- [Contributing](./docs/CONTRIBUTING.md): Development workflow and quality gates
 
 ## Source
 
@@ -268,6 +391,9 @@ Generated:
   • docs/ARCHITECTURE.md   (created / updated)
   • docs/api.md            (created / updated)
   • docs/docstrings.md     (created / updated)
+  • docs/OPERATIONS.md     (created / updated)
+  • docs/SECURITY.md       (created / updated)
+  • docs/CONTRIBUTING.md   (created / updated)
   • llms.txt               (created / updated)
 
 Language: <language>

@@ -180,6 +180,9 @@ function checkExistingDocs(rootPath) {
     architecture: { path: path.join('docs', 'ARCHITECTURE.md') },
     api:          { path: path.join('docs', 'api.md') },
     docstrings:   { path: path.join('docs', 'docstrings.md') },
+    operations:   { path: path.join('docs', 'OPERATIONS.md') },
+    security:     { path: path.join('docs', 'SECURITY.md') },
+    contributing: { path: path.join('docs', 'CONTRIBUTING.md') },
     llmsTxt:      { path: 'llms.txt' },
   };
   const result = {};
