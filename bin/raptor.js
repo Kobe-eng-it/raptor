@@ -34,6 +34,7 @@ COMMANDS
   wiki build [path] [--json]          Build local wiki pages and lexical indexes
   wiki validate [path] [--json]       Validate wiki frontmatter, links, sources, staleness
   wiki status [path] [--json]         Show draft, reviewed, and stale wiki pages
+  wiki review <page|--all> [path]     Mark wiki pages reviewed and refresh query index
   query <question> [path] [--json]    Search the local Raptor wiki
   version [--json]                   Print version
 

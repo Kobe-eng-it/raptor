@@ -1,7 +1,7 @@
 ---
-status: draft
-source_commit: 788243df264461030b3b8de850d92c0dfb28d0b2
-last_generated: 2026-06-04T14:23:19.747Z
+status: reviewed
+source_commit: f83be61cdc0a28fd1461d078598a29d3e8cecea0
+last_generated: 2026-06-04T14:34:38.111Z
 sources: 
   - src/analyze.js
   - src/diff.js
@@ -20,10 +20,10 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 66d6d7e6129f012a
+  src/wiki.js: 04b4669e064fe36e
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 7e0a7902d0bb6f47
+  test/wiki.test.js: 03e6f042acc1d126
 confidence: medium
 ---
 
@@ -112,6 +112,7 @@ confidence: medium
 - `createPages` (function)
 - `pageTitle` (function)
 - `createChunks` (function)
+- `refreshChunkIndex` (function)
 - `createLinks` (function)
 - `writeJsonl` (function)
 - `writeIndexes` (function)
@@ -123,6 +124,10 @@ confidence: medium
 - `validatePage` (function)
 - `wikiValidate` (function)
 - `wikiStatus` (function)
+- `normalizePageName` (function)
+- `parseReviewArgs` (function)
+- `writeReviewedPage` (function)
+- `wikiReview` (function)
 - `tokenize` (function)
 - `loadJsonl` (function)
 - `parseQueryArgs` (function)

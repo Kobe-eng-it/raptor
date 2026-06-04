@@ -420,6 +420,13 @@ function createChunks(rootPath, pageFiles) {
   return chunks;
 }
 
+function refreshChunkIndex(rootPath) {
+  const pages = listWikiPages(rootPath).map(page => slash(path.relative(rootPath, page)));
+  const chunks = createChunks(rootPath, pages);
+  writeJsonl(path.join(rootPath, INDEX_DIR, 'chunks.jsonl'), chunks);
+  return chunks.length;
+}
+
 function createLinks(rootPath, pageFiles) {
   const pageNames = new Set(pageFiles.map(file => slash(path.relative(path.join(rootPath, WIKI_DIR), path.join(rootPath, file)))));
   const links = { page_to_page: {}, page_to_sources: {} };
@@ -643,6 +650,69 @@ function wikiStatus(argv) {
   output({ path: targetPath, ...status, pages: validation }, json);
 }
 
+function normalizePageName(page) {
+  const normalized = slash(page).replace(/^\.raptor\/wiki\//, '');
+  return normalized.endsWith('.md') ? normalized : `${normalized}.md`;
+}
+
+function parseReviewArgs(argv) {
+  const json = argv.includes('--json');
+  const all = argv.includes('--all');
+  const nonFlags = argv.filter(arg => !arg.startsWith('--'));
+  let targetPath = process.cwd();
+  let page = null;
+
+  if (all) {
+    if (nonFlags.length > 0) targetPath = path.resolve(nonFlags[0]);
+  } else {
+    page = nonFlags[0] ? normalizePageName(nonFlags[0]) : null;
+    if (nonFlags.length > 1) targetPath = path.resolve(nonFlags[1]);
+  }
+
+  return { json, all, page, targetPath };
+}
+
+function writeReviewedPage(pagePath) {
+  const content = readText(pagePath);
+  const { meta, body } = parseFrontmatter(content);
+  if (!meta) return { ok: false, error: 'missing frontmatter' };
+  meta.status = 'reviewed';
+  fs.writeFileSync(pagePath, `${createFrontmatter(meta)}\n\n${body.trim()}\n`, 'utf8');
+  return { ok: true };
+}
+
+function wikiReview(argv) {
+  const { json, all, page, targetPath } = parseReviewArgs(argv);
+  if (!fs.existsSync(targetPath)) return outputError(`Path does not exist: ${targetPath}`, json);
+  if (!all && !page) return outputError('wiki review requires <page> or --all', json);
+
+  const pages = listWikiPages(targetPath);
+  if (!pages.length) return outputError('Raptor wiki not found. Run "raptor wiki build" first.', json);
+  const pageNames = new Set(pages.map(pagePath => slash(path.relative(path.join(targetPath, WIKI_DIR), pagePath))));
+  const selected = all
+    ? pages
+    : pages.filter(pagePath => slash(path.relative(path.join(targetPath, WIKI_DIR), pagePath)) === page);
+
+  if (!selected.length) return outputError(`Wiki page not found: ${page}`, json);
+
+  const reviewed = [];
+  const skipped = [];
+  for (const pagePath of selected) {
+    const relPage = slash(path.relative(path.join(targetPath, WIKI_DIR), pagePath));
+    const validation = validatePage(targetPath, pagePath, pageNames);
+    if (validation.errors.length) {
+      skipped.push({ page: relPage, errors: validation.errors });
+      continue;
+    }
+    const result = writeReviewedPage(pagePath);
+    if (result.ok) reviewed.push(relPage);
+    else skipped.push({ page: relPage, errors: [result.error] });
+  }
+
+  const chunks = refreshChunkIndex(targetPath);
+  output({ path: targetPath, reviewed, skipped, index: { chunks } }, json);
+}
+
 function tokenize(value) {
   const stopwords = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'for', 'from', 'how', 'in', 'is', 'of', 'on', 'or', 'the', 'to', 'where']);
   return String(value).toLowerCase().split(/[^a-z0-9_./-]+/)
@@ -759,8 +829,9 @@ function wiki(argv) {
   if (subcommand === 'build') return wikiBuild(rest);
   if (subcommand === 'validate') return wikiValidate(rest);
   if (subcommand === 'status') return wikiStatus(rest);
+  if (subcommand === 'review') return wikiReview(rest);
   const json = argv.includes('--json');
-  return outputError('wiki subcommand is required: init, build, validate, status', json);
+  return outputError('wiki subcommand is required: init, build, validate, status, review', json);
 }
 
 module.exports = {

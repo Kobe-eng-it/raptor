@@ -1,7 +1,7 @@
 ---
-status: draft
-source_commit: 788243df264461030b3b8de850d92c0dfb28d0b2
-last_generated: 2026-06-04T14:23:19.779Z
+status: reviewed
+source_commit: f83be61cdc0a28fd1461d078598a29d3e8cecea0
+last_generated: 2026-06-04T14:34:38.156Z
 sources: 
   - README.md
   - docs/api.md

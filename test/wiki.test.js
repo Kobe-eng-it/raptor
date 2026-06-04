@@ -164,6 +164,26 @@ test('query treats app started questions as startup queries', () => {
   assert.ok(result.result.results.some(row => row.excerpt.includes('frontend/gui/src/main.tsx')));
 });
 
+test('wiki review marks pages reviewed and refreshes query chunk warnings', () => {
+  const dir = nestedFrontendRepo();
+  capture(() => wiki(['build', dir, '--json']));
+
+  const reviewResult = capture(() => wiki(['review', '--all', dir, '--json']));
+  assert.equal(reviewResult.ok, true);
+  assert.ok(reviewResult.result.reviewed.includes('entrypoints.md'));
+  assert.equal(reviewResult.result.skipped.length, 0);
+
+  const status = capture(() => wiki(['status', dir, '--json']));
+  assert.deepEqual(status.result.draft, []);
+  assert.ok(status.result.reviewed.includes('entrypoints.md'));
+  assert.ok(status.result.reviewed.includes('workspaces.md'));
+
+  const queryResult = capture(() => query(['where is the app started?', dir, '--json']));
+  assert.equal(queryResult.ok, true);
+  assert.deepEqual(queryResult.result.warnings, []);
+  assert.equal(queryResult.result.results[0].status, 'reviewed');
+});
+
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
 });

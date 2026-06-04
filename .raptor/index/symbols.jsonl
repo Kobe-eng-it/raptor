@@ -59,6 +59,7 @@
 {"path":"src/wiki.js","name":"createPages","kind":"function"}
 {"path":"src/wiki.js","name":"pageTitle","kind":"function"}
 {"path":"src/wiki.js","name":"createChunks","kind":"function"}
+{"path":"src/wiki.js","name":"refreshChunkIndex","kind":"function"}
 {"path":"src/wiki.js","name":"createLinks","kind":"function"}
 {"path":"src/wiki.js","name":"writeJsonl","kind":"function"}
 {"path":"src/wiki.js","name":"writeIndexes","kind":"function"}
@@ -70,6 +71,10 @@
 {"path":"src/wiki.js","name":"validatePage","kind":"function"}
 {"path":"src/wiki.js","name":"wikiValidate","kind":"function"}
 {"path":"src/wiki.js","name":"wikiStatus","kind":"function"}
+{"path":"src/wiki.js","name":"normalizePageName","kind":"function"}
+{"path":"src/wiki.js","name":"parseReviewArgs","kind":"function"}
+{"path":"src/wiki.js","name":"writeReviewedPage","kind":"function"}
+{"path":"src/wiki.js","name":"wikiReview","kind":"function"}
 {"path":"src/wiki.js","name":"tokenize","kind":"function"}
 {"path":"src/wiki.js","name":"loadJsonl","kind":"function"}
 {"path":"src/wiki.js","name":"parseQueryArgs","kind":"function"}

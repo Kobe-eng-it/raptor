@@ -1,13 +1,13 @@
 ---
-status: draft
-source_commit: 788243df264461030b3b8de850d92c0dfb28d0b2
-last_generated: 2026-06-04T14:23:19.709Z
+status: reviewed
+source_commit: f83be61cdc0a28fd1461d078598a29d3e8cecea0
+last_generated: 2026-06-04T14:34:38.056Z
 sources: 
   - package.json
   - bin/raptor.js
 source_hashes: 
   package.json: 8691437094f0294e
-  bin/raptor.js: 663d4e86b062608c
+  bin/raptor.js: 6c11ecc797d18539
 confidence: medium
 ---
 
