@@ -146,22 +146,24 @@ For questions such as "Come si crea un'utenza?", do not stop at the Raptor query
 1. Run `raptor answer-pack "<question>" "<target-path>" --json` before manual grep-style exploration.
 2. If `result.confidence` is `low`, state the limitation before proposing a workflow and treat the answer as incomplete evidence.
 3. Read the top bounded snippets from `result.sources[]`, preserving their order.
-4. If `result.routes[]` is non-empty, cite route files in `File verificati` and include method, route path, handler, and line when available.
-5. Read the top returned wiki page under `.raptor/wiki/` when `result.wiki_results[]` indicates a relevant page.
-6. Read the top source paths from `result.symbols[].path` and `result.sources[].path`, preferring route source paths first.
-7. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
-8. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run follow-up Raptor queries before answering:
+4. Open and inspect at least the first 3 distinct files from `result.routes[].path` and `result.sources[].path`, preferring route files first. Do this before answering; do not ask the user whether to open these files.
+5. In the inspected files, search for `POST`, `@PostMapping`, `create`, `register`, `signup`, `Keycloak`, `OAuth`, `issuer`, and identity-provider configuration before deciding whether a workflow exists.
+6. If `result.routes[]` is non-empty, cite route files in `File verificati` and include method, route path, handler, and line when available.
+7. Read the top returned wiki page under `.raptor/wiki/` when `result.wiki_results[]` indicates a relevant page.
+8. Read the top source paths from `result.symbols[].path` and `result.sources[].path`, preferring route source paths first.
+9. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
+10. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run follow-up Raptor queries before answering:
    - `raptor query "backend endpoint create user account role keycloak" "<target-path>" --json`
    - `raptor query "API create user account role" "<target-path>" --json`
    - use the user's domain words too, for example `utenza`, `utente`, `ruolo`, `profilo`.
-9. Read any backend/controller/service/config files returned by the follow-up queries, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
-10. Answer in the user's language with:
+11. Read any backend/controller/service/config files returned by the follow-up queries, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
+12. Answer in the user's language with:
    - the shortest procedural explanation that fits the evidence;
    - the key files and symbols involved;
    - any endpoint, command, method, or component names found;
    - an explicit caveat if Raptor found likely files but the exact workflow is not fully visible.
 
-Never claim a workflow is complete unless the inspected files show the full path from entrypoint/caller to implementation. If the result only identifies a likely service or symbol, say that clearly and suggest the next file to inspect.
+Never claim a workflow is complete unless the inspected files show the full path from entrypoint/caller to implementation. If the inspected route/source files do not contain a POST/create/register flow, state that explicitly in `Limiti`; do not ask the user whether to open those files after already answering.
 
 ### Required Answer Shape
 

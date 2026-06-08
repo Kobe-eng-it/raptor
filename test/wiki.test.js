@@ -611,7 +611,10 @@ test('raptor skill instructs agents to use answer-pack for procedural questions'
   assert.ok(skill.includes('raptor answer-pack "<question>" "<target-path>" --json'));
   assert.ok(skill.includes('before manual grep-style exploration'));
   assert.ok(skill.includes('If `result.confidence` is `low`, state the limitation before proposing a workflow'));
+  assert.ok(skill.includes('Open and inspect at least the first 3 distinct files from `result.routes[].path` and `result.sources[].path`'));
+  assert.ok(skill.includes('do not ask the user whether to open these files'));
   assert.ok(skill.includes('If `result.routes[]` is non-empty, cite route files in `File verificati`'));
+  assert.ok(skill.includes('If the inspected route/source files do not contain a POST/create/register flow, state that explicitly in `Limiti`'));
 });
 
 test('query tokenizer removes generic question words', () => {

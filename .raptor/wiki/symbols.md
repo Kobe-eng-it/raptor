@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
-last_generated: 2026-06-08T13:51:32.881Z
+source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
+last_generated: 2026-06-08T14:09:10.059Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -27,7 +27,7 @@ source_hashes:
   src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: b3fb92f3edf8ce9c
+  test/wiki.test.js: 64edc43aa78f2ca7
 confidence: medium
 ---
 
