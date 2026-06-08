@@ -13,6 +13,7 @@ const COMMANDS = {
   doctor:  () => require('../src/doctor').doctor(argv),
   wiki:    () => require('../src/wiki').wiki(argv),
   query:   () => require('../src/wiki').query(argv),
+  'answer-pack': () => require('../src/answerPack').answerPack(argv),
   version: () => {
     const json = argv.includes('--json');
     if (json) {
@@ -36,6 +37,8 @@ COMMANDS
   wiki status [path] [--json]         Show draft, reviewed, and stale wiki pages
   wiki review <page|--all> [path]     Mark wiki pages reviewed and refresh query index
   query <question> [path] [--json]    Search the local Raptor wiki
+  answer-pack <question> [path] [--json]
+                                      Return bounded source evidence for agents
   version [--json]                   Print version
 
 EXAMPLES
@@ -44,6 +47,7 @@ EXAMPLES
   raptor diff --json
   raptor wiki build --json
   raptor query "where is the CLI entrypoint?" --json
+  raptor answer-pack "how is a user created?" --json
   echo "# My Doc" | raptor write --file README.md
   echo "..." | raptor write --file docs/ARCHITECTURE.md --merge
 `);

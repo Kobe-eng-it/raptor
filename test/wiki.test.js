@@ -96,6 +96,23 @@ function captureError(fn) {
   return { exitCode, output: JSON.parse(lines.join('\n')) };
 }
 
+function runCli(argv) {
+  const originalArgv = process.argv;
+  const originalLog = console.log;
+  const lines = [];
+  console.log = (value) => lines.push(value);
+  process.argv = [process.execPath, path.join(__dirname, '..', 'bin', 'raptor.js'), ...argv];
+  try {
+    const cli = require.resolve('../bin/raptor.js');
+    delete require.cache[cli];
+    require(cli);
+  } finally {
+    process.argv = originalArgv;
+    console.log = originalLog;
+  }
+  return lines.join('\n');
+}
+
 test('frontmatter round-trips required wiki metadata', () => {
   const fm = createFrontmatter({
     status: 'draft',
@@ -526,6 +543,21 @@ test('answer-pack reports missing index with build instruction', () => {
   assert.equal(result.exitCode, 1);
   assert.equal(result.output.ok, false);
   assert.ok(result.output.error.includes('Run "raptor wiki build" first'));
+});
+
+test('CLI exposes answer-pack command and returns JSON bundle', () => {
+  const dir = tempRepo();
+  capture(() => wiki(['build', dir, '--json']));
+
+  const help = runCli(['help']);
+  assert.ok(help.includes('answer-pack <question> [path] [--json]'));
+
+  const raw = runCli(['answer-pack', 'Come si crea un utenza?', dir, '--json']);
+  const result = JSON.parse(raw);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.routes[0].path, 'backend/src/UserController.java');
+  assert.equal(result.result.sources[0].path, 'backend/src/UserController.java');
 });
 
 test('query tokenizer removes generic question words', () => {
