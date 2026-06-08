@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T07:40:22Z
+last_modified: 2026-06-08T09:56:48Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -23,7 +23,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
         covers: ["R1.AC2", "R1.AC3", "R1.AC4", "R1.AC5"]
 
 - [ ] 2. Integrate routes into wiki build artifacts
-  - [ ] 2.1 Add route extraction to build context and write `.raptor/index/routes.jsonl`
+  - [x] 2.1 Add route extraction to build context and write `.raptor/index/routes.jsonl`
     - Requirements: `R2.AC1`, `R2.AC3`, `R5.AC1`, `R5.AC2`, `R5.AC3`, `NFR2`, `C2`, `C3`, `C4`
     - Design: `src/wiki.js` Build Integration, Data Models, Error Handling
     - Verification:

@@ -15,6 +15,7 @@ const {
 const { getHeadCommit } = require('./git');
 const { extractSymbols, isSymbolFile } = require('./symbols');
 const { discoverWorkspaces } = require('./workspaces');
+const { extractRoutes } = require('./routes');
 
 const SCHEMA_VERSION = 'v0.1.0';
 const WIKI_DIR = path.join('.raptor', 'wiki');
@@ -145,6 +146,7 @@ function buildContext(rootPath) {
   const framework = detectFramework(rootPath);
   const entryPoints = getEntryPoints(files, rootPath);
   const workspaceAnalysis = discoverWorkspaces(files, rootPath);
+  const routeAnalysis = extractRoutes(files, rootPath, workspaceAnalysis.workspaces);
   const symbolFiles = files.filter(isSymbolFile).slice(0, 250);
   const symbolRows = [];
   const symbolMap = {};
@@ -169,6 +171,8 @@ function buildContext(rootPath) {
     entryPoints,
     workspaces: workspaceAnalysis.workspaces,
     workspaceWarnings: workspaceAnalysis.warnings,
+    routes: routeAnalysis.routes,
+    routeWarnings: routeAnalysis.warnings,
     symbolRows,
     symbolMap,
     sourceCommit: getHeadCommit(rootPath) || 'unknown',
@@ -458,13 +462,15 @@ function writeIndexes(context, pages) {
   const pageFiles = pages.map(page => page.path);
   const chunks = createChunks(context.rootPath, pageFiles);
   const symbols = context.symbolRows;
+  const routes = context.routes;
   const links = createLinks(context.rootPath, pageFiles);
 
   writeJsonl(path.join(context.rootPath, INDEX_DIR, 'chunks.jsonl'), chunks);
   writeJsonl(path.join(context.rootPath, INDEX_DIR, 'symbols.jsonl'), symbols);
+  writeJsonl(path.join(context.rootPath, INDEX_DIR, 'routes.jsonl'), routes);
   fs.writeFileSync(path.join(context.rootPath, INDEX_DIR, 'links.json'), JSON.stringify(links, null, 2) + '\n', 'utf8');
 
-  return { chunks: chunks.length, symbols: symbols.length, links };
+  return { chunks: chunks.length, symbols: symbols.length, routes: routes.length, links };
 }
 
 function writeManifest(context, indexStats) {
@@ -476,6 +482,7 @@ function writeManifest(context, indexStats) {
     index: {
       chunks: indexStats.chunks,
       symbols: indexStats.symbols,
+      routes: indexStats.routes,
     },
   };
   fs.writeFileSync(path.join(context.rootPath, '.raptor', 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
@@ -552,7 +559,7 @@ function wikiBuild(argv) {
     path: targetPath,
     source_commit: context.sourceCommit,
     pages: pages.map(page => page.path),
-    index: { chunks: indexStats.chunks, symbols: indexStats.symbols },
+    index: { chunks: indexStats.chunks, symbols: indexStats.symbols, routes: indexStats.routes },
     manifest,
     exports: ['llms.txt', 'llms-full.txt'],
   }, json);

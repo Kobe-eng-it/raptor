@@ -25,6 +25,16 @@ function tempRepo() {
   fs.writeFileSync(path.join(dir, 'bin', 'raptor.js'), '#!/usr/bin/env node\nrequire("../src/index").main();\n', 'utf8');
   fs.writeFileSync(path.join(dir, 'src', 'index.js'), 'exports.main = function main() { return "ok"; };\n', 'utf8');
   fs.writeFileSync(path.join(dir, 'src', 'api.py'), 'def handle_request():\n    return True\n\nclass Worker:\n    pass\n', 'utf8');
+  fs.mkdirSync(path.join(dir, 'backend', 'src'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'backend', 'src', 'UserController.java'), [
+    'import org.springframework.web.bind.annotation.*;',
+    '@RestController',
+    '@RequestMapping("/api")',
+    'public class UserController {',
+    '  @GetMapping("/user")',
+    '  public Object getUser() { return null; }',
+    '}',
+  ].join('\n'), 'utf8');
   return dir;
 }
 
@@ -233,10 +243,17 @@ test('wiki build creates pages, indexes, manifest, and llms exports', () => {
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'workspaces.md')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'chunks.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'symbols.jsonl')));
+  assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'routes.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'links.json')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'manifest.json')));
   assert.ok(fs.existsSync(path.join(dir, 'llms.txt')));
   assert.ok(fs.existsSync(path.join(dir, 'llms-full.txt')));
+  assert.equal(result.result.index.routes, 1);
+  const routes = fs.readFileSync(path.join(dir, '.raptor', 'index', 'routes.jsonl'), 'utf8')
+    .trim()
+    .split(/\r?\n/)
+    .map(line => JSON.parse(line));
+  assert.deepEqual(routes.map(route => `${route.method} ${route.route}`), ['GET /api/user']);
 });
 
 test('wiki build renders nested workspaces and groups entrypoints by workspace', () => {
