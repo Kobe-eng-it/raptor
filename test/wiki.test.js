@@ -386,6 +386,10 @@ test('query surfaces route evidence for procedural account questions', () => {
   )));
   assert.ok(result.result.results[0].sources.includes('backend/src/UserController.java'));
   assert.ok(result.result.warnings[0].includes('routes.md'));
+
+  const text = captureText(() => query(['Come si crea un utenza?', dir]));
+  assert.ok(text.includes('Answer: GET /api/user -> backend/src/UserController.java:5 (spring, high confidence)'));
+  assert.ok(text.indexOf('- backend/src/UserController.java') < text.indexOf('Warnings:'));
 });
 
 test('wiki review marks pages reviewed and refreshes query chunk warnings', () => {
@@ -440,6 +444,8 @@ test('query expands Italian procedural account questions', () => {
 
   const text = captureText(() => query(['Come si crea un utenza?', dir]));
   assert.ok(text.includes('Answer: src/users/create-user.js (function createUser)'));
+  assert.ok(text.includes('Route evidence: GET /api/user -> backend/src/UserController.java:5 (spring, high confidence)'));
+  assert.ok(text.indexOf('Route evidence:') < text.indexOf('Sources:'));
 });
 
 test('query sources do not use paths truncated by excerpts', () => {

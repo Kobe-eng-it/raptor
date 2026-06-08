@@ -923,6 +923,15 @@ function scoreRoute(route, terms, routeRelated) {
   return score;
 }
 
+function formatRouteEvidence(route) {
+  const location = route.line ? `${route.path}:${route.line}` : route.path;
+  const details = [route.framework, route.confidence ? `${route.confidence} confidence` : null]
+    .filter(Boolean)
+    .join(', ');
+  const suffix = details ? ` (${details})` : '';
+  return `${route.method} ${route.route} -> ${location}${suffix}`;
+}
+
 function formatQueryText(data) {
   const lines = [`Question: ${data.question}`];
   if (!data.results.length) {
@@ -932,13 +941,20 @@ function formatQueryText(data) {
 
   const best = data.results[0];
   const bestSymbol = best.page === 'symbols.md' ? data.symbols[0] : null;
+  const bestRoute = data.routes && data.routes.length ? data.routes[0] : null;
   lines.push('', `Best match: ${best.page} / ${best.heading} (${best.status})`);
-  if (bestSymbol) {
+  if (bestRoute && best.page === 'routes.md') {
+    lines.push(`Answer: ${formatRouteEvidence(bestRoute)}`);
+  } else if (bestSymbol) {
     lines.push(`Answer: ${bestSymbol.path} (${bestSymbol.kind} ${bestSymbol.name})`);
   } else if (best.sources.length) {
     lines.push(`Answer: ${best.sources[0]}`);
   } else {
     lines.push(`Answer: ${best.excerpt}`);
+  }
+
+  if (bestRoute && best.page !== 'routes.md') {
+    lines.push(`Route evidence: ${formatRouteEvidence(bestRoute)}`);
   }
 
   lines.push('', 'Top results:');
@@ -949,6 +965,7 @@ function formatQueryText(data) {
   }
 
   const sourcePaths = [...new Set([
+    ...(data.routes || []).map(route => route.path),
     ...data.symbols.map(symbol => symbol.path),
     ...data.results.flatMap(result => result.sources),
   ])].slice(0, 8);
