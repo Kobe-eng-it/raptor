@@ -1,14 +1,14 @@
 ---
 status: reviewed
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.460Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.285Z
+sources:
   - README.md
   - docs/api.md
   - docs/ARCHITECTURE.md
   - docs/docstrings.md
   - docs/STATUS.md
-source_hashes: 
+source_hashes:
   README.md: 01e6a99d0fc184ac
   docs/api.md: 1bfd3feef494fefa
   docs/ARCHITECTURE.md: 43dc6997de5991cd

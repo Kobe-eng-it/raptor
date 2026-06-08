@@ -1,11 +1,11 @@
 ---
 status: reviewed
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.418Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.219Z
+sources:
   - bin/raptor.js
-source_hashes: 
-  bin/raptor.js: 6c11ecc797d18539
+source_hashes:
+  bin/raptor.js: 7156321309c14586
 confidence: high
 ---
 

@@ -8,9 +8,14 @@
     ],
     "workspaces.md": [
       "entrypoints.md",
+      "routes.md",
       "architecture.md"
     ],
     "entrypoints.md": [],
+    "routes.md": [
+      "architecture.md",
+      "symbols.md"
+    ],
     "symbols.md": [],
     "documentation.md": []
   },
@@ -30,11 +35,16 @@
     "entrypoints.md": [
       "bin/raptor.js"
     ],
+    "routes.md": [
+      "test/wiki.test.js"
+    ],
     "symbols.md": [
       "src/analyze.js",
+      "src/answerPack.js",
       "src/diff.js",
       "src/doctor.js",
       "src/git.js",
+      "src/routes.js",
       "src/symbols.js",
       "src/util.js",
       "src/wiki.js",

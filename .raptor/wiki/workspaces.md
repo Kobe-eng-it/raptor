@@ -1,13 +1,13 @@
 ---
 status: reviewed
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.403Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.203Z
+sources:
   - package.json
   - bin/raptor.js
-source_hashes: 
+source_hashes:
   package.json: 8691437094f0294e
-  bin/raptor.js: 6c11ecc797d18539
+  bin/raptor.js: 7156321309c14586
 confidence: medium
 ---
 
@@ -37,4 +37,5 @@ None detected.
 ## Related Pages
 
 - [Entrypoints](entrypoints.md)
+- [Routes](routes.md)
 - [Architecture](architecture.md)

@@ -1,0 +1,6 @@
+{"method":"GET","route":"/users","path":"test/wiki.test.js","line":206,"handler":"createUser","framework":"express","workspace":"","confidence":"high","reason":"Express get route call"}
+{"method":"POST","route":"/users","path":"test/wiki.test.js","line":207,"handler":"createUser","framework":"express","workspace":"","confidence":"high","reason":"Express post route call"}
+{"method":"DELETE","route":"/users/:id","path":"test/wiki.test.js","line":211,"framework":"express","workspace":"","confidence":"high","reason":"Express delete route call"}
+{"method":"GET","route":"/users","path":"test/wiki.test.js","line":233,"framework":"express","workspace":"","confidence":"low","reason":"Express get route call"}
+{"method":"GET","route":"/users","path":"test/wiki.test.js","line":252,"handler":"list_users","framework":"express","workspace":"","confidence":"high","reason":"Express get route call"}
+{"method":"POST","route":"/users","path":"test/wiki.test.js","line":256,"handler":"create_user","framework":"express","workspace":"","confidence":"high","reason":"Express post route call"}

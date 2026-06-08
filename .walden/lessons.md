@@ -15,3 +15,8 @@ Review this file before non-trivial work when the current request matches past m
 - Lesson: Tests for CLI dispatch should avoid spawning node when the sandbox may block child processes
 - Guardrail: Prefer in-process CLI loading with controlled process.argv and require cache reset for dispatcher regression tests
 
+### 2026-06-08T10:58:23Z | route-evidence-pack | execute
+- Trigger: wiki validate ran concurrently with wiki review and observed transient draft page state
+- Lesson: Proof commands that mutate and then read workflow state must run sequentially
+- Guardrail: Do not parallelize Walden verification commands when a later command depends on state written by an earlier command
+

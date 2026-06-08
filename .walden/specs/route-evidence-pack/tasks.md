@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T10:52:45Z
+last_modified: 2026-06-08T10:58:36Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -67,7 +67,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
       - command: ["npm", "test"]
         covers: ["R4.AC1", "R4.AC4"]
 
-- [ ] 5. Update agent workflow and generated project knowledge
+- [x] 5. Update agent workflow and generated project knowledge
   - [x] 5.1 Update `skill/raptor/SKILL.md` to use `raptor answer-pack` for procedural questions
     - Requirements: `R6.AC1`, `R6.AC2`, `R6.AC3`
     - Design: Raptor Skill
@@ -75,7 +75,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
       - command: ["npm", "test"]
         covers: ["R6.AC1", "R6.AC2", "R6.AC3"]
 
-  - [ ] 5.2 Regenerate and review Raptor's own wiki/index exports after implementation
+  - [x] 5.2 Regenerate and review Raptor's own wiki/index exports after implementation
     - Requirements: `R2.AC1`, `R2.AC2`, `R2.AC5`, `R5.AC4`, `R6.AC1`
     - Design: Verification Plan
     - Verification:

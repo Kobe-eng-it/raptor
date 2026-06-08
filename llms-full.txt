@@ -6,14 +6,14 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.389Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.186Z
+sources:
   - package.json
   - bin/raptor.js
-source_hashes: 
+source_hashes:
   package.json: 8691437094f0294e
-  bin/raptor.js: 6c11ecc797d18539
+  bin/raptor.js: 7156321309c14586
 confidence: medium
 ---
 
@@ -51,15 +51,15 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.460Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.285Z
+sources:
   - README.md
   - docs/api.md
   - docs/ARCHITECTURE.md
   - docs/docstrings.md
   - docs/STATUS.md
-source_hashes: 
+source_hashes:
   README.md: 01e6a99d0fc184ac
   docs/api.md: 1bfd3feef494fefa
   docs/ARCHITECTURE.md: 43dc6997de5991cd
@@ -87,12 +87,12 @@ confidence: high
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.418Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.219Z
+sources:
   - bin/raptor.js
-source_hashes: 
-  bin/raptor.js: 6c11ecc797d18539
+source_hashes:
+  bin/raptor.js: 7156321309c14586
 confidence: high
 ---
 
@@ -112,12 +112,12 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.368Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.158Z
+sources:
   - package.json
   - README.md
-source_hashes: 
+source_hashes:
   package.json: 8691437094f0294e
   README.md: 01e6a99d0fc184ac
 confidence: high
@@ -137,11 +137,11 @@ CLI for AI-driven codebase documentation generation
 
 ## Stack
 
-- JavaScript: 10 files (48%)
-- Markdown: 8 files (38%)
-- JSON: 1 files (5%)
-- PowerShell: 1 files (5%)
-- Shell: 1 files (5%)
+- JavaScript: 12 files (52%)
+- Markdown: 8 files (35%)
+- JSON: 1 files (4%)
+- PowerShell: 1 files (4%)
+- Shell: 1 files (4%)
 
 ## Framework
 
@@ -152,34 +152,77 @@ None detected.
 - [package.json](../../package.json)
 - [README.md](../../README.md)
 
+<!-- source: .raptor/wiki/routes.md -->
+
+---
+status: draft
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.230Z
+sources:
+  - test/wiki.test.js
+source_hashes:
+  test/wiki.test.js: ae31ba76c61f049e
+confidence: medium
+---
+
+# Routes
+
+## Summary
+
+Detected 6 route(s).
+
+## Detected Routes
+
+### .
+
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):206 (express, high) - handler `createUser`; Express get route call
+- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):207 (express, high) - handler `createUser`; Express post route call
+- `DELETE /users/:id` - [test/wiki.test.js](../../test/wiki.test.js):211 (express, high) - handler unknown; Express delete route call
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):233 (express, low) - handler unknown; Express get route call
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):252 (express, high) - handler `list_users`; Express get route call
+- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):256 (express, high) - handler `create_user`; Express post route call
+
+## Build Warnings
+
+- test/wiki.test.js:233 Express get route uses unresolved expression
+
+## Related Pages
+
+- [Architecture](architecture.md)
+- [Symbols](symbols.md)
+
 <!-- source: .raptor/wiki/symbols.md -->
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.429Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.243Z
+sources:
   - src/analyze.js
+  - src/answerPack.js
   - src/diff.js
   - src/doctor.js
   - src/git.js
+  - src/routes.js
   - src/symbols.js
   - src/util.js
   - src/wiki.js
   - src/workspaces.js
   - src/write.js
   - test/wiki.test.js
-source_hashes: 
+source_hashes:
   src/analyze.js: a19090ef105694df
+  src/answerPack.js: 94b2615f7a6881d2
   src/diff.js: f873e4e114325763
   src/doctor.js: c97c2e2154cc4c78
   src/git.js: dd6e162228aac497
+  src/routes.js: d8d9a24027d71ae3
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: f4a498e63c48b506
+  src/wiki.js: 06e923e8684f09f1
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: ddb1771f60c28dff
+  test/wiki.test.js: ae31ba76c61f049e
 confidence: medium
 ---
 
@@ -191,6 +234,24 @@ confidence: medium
 
 - `readDeepContent` (function)
 - `analyze` (function)
+- `module.exports` (commonjs-export)
+
+### src/answerPack.js
+
+- `expandQueryTerms` (function)
+- `loadJsonl` (function)
+- `parseAnswerPackArgs` (function)
+- `isRouteQuery` (function)
+- `scoreSymbol` (function)
+- `scoreRoute` (function)
+- `scoreChunk` (function)
+- `snippet` (function)
+- `insideRoot` (function)
+- `selectSourcePaths` (function)
+- `extractSourcePaths` (function)
+- `buildSourceSnippet` (function)
+- `confidenceFor` (function)
+- `answerPack` (function)
 - `module.exports` (commonjs-export)
 
 ### src/diff.js
@@ -217,6 +278,27 @@ confidence: medium
 - `getGitRoot` (function)
 - `getHeadCommit` (function)
 - `listChangedFiles` (function)
+- `module.exports` (commonjs-export)
+
+### src/routes.js
+
+- `slash` (function)
+- `lineNumberAt` (function)
+- `findWorkspace` (function)
+- `joinRoutes` (function)
+- `normalizeRoutePath` (function)
+- `parseLiteralStrings` (function)
+- `isDynamicRoutePath` (function)
+- `parseSpringAnnotationArgs` (function)
+- `functionNameAfter` (function)
+- `findClassPrefix` (function)
+- `handlerAfter` (function)
+- `pushRoute` (function)
+- `extractSpringRoutes` (function)
+- `extractExpressRoutes` (function)
+- `parsePythonRouteMethods` (function)
+- `extractPythonRoutes` (function)
+- `extractRoutes` (function)
 - `module.exports` (commonjs-export)
 
 ### src/symbols.js
@@ -265,6 +347,7 @@ confidence: medium
 - `workspaceSummary` (function)
 - `renderWorkspaces` (function)
 - `renderWorkspaceEntrypoints` (function)
+- `renderRoutes` (function)
 - `createPages` (function)
 - `pageTitle` (function)
 - `createChunks` (function)
@@ -292,6 +375,9 @@ confidence: medium
 - `hasSourcePath` (function)
 - `scoreSymbol` (function)
 - `extractSourcePaths` (function)
+- `isRouteQuery` (function)
+- `scoreRoute` (function)
+- `formatRouteEvidence` (function)
 - `formatQueryText` (function)
 - `query` (function)
 - `wiki` (function)
@@ -335,22 +421,27 @@ confidence: medium
 - `nestedFrontendRepo` (function)
 - `capture` (function)
 - `captureText` (function)
+- `captureError` (function)
+- `runCli` (function)
 - `module.exports` (commonjs-export)
 - `main` (commonjs-export)
 - `extra` (commonjs-export)
+- `GET /users` (route)
+- `POST /users` (route)
+- `DELETE /users/:id` (route)
 
 <!-- source: .raptor/wiki/workspaces.md -->
 
 ---
 status: draft
-source_commit: 2dd5097039b8db18c8ba6f30d0287416803dc63e
-last_generated: 2026-06-04T16:28:56.403Z
-sources: 
+source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
+last_generated: 2026-06-08T10:58:35.203Z
+sources:
   - package.json
   - bin/raptor.js
-source_hashes: 
+source_hashes:
   package.json: 8691437094f0294e
-  bin/raptor.js: 6c11ecc797d18539
+  bin/raptor.js: 7156321309c14586
 confidence: medium
 ---
 
@@ -380,5 +471,6 @@ None detected.
 ## Related Pages
 
 - [Entrypoints](entrypoints.md)
+- [Routes](routes.md)
 - [Architecture](architecture.md)
 

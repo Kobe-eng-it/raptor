@@ -1,6 +1,21 @@
 {"path":"src/analyze.js","name":"readDeepContent","kind":"function"}
 {"path":"src/analyze.js","name":"analyze","kind":"function"}
 {"path":"src/analyze.js","name":"module.exports","kind":"commonjs-export"}
+{"path":"src/answerPack.js","name":"expandQueryTerms","kind":"function"}
+{"path":"src/answerPack.js","name":"loadJsonl","kind":"function"}
+{"path":"src/answerPack.js","name":"parseAnswerPackArgs","kind":"function"}
+{"path":"src/answerPack.js","name":"isRouteQuery","kind":"function"}
+{"path":"src/answerPack.js","name":"scoreSymbol","kind":"function"}
+{"path":"src/answerPack.js","name":"scoreRoute","kind":"function"}
+{"path":"src/answerPack.js","name":"scoreChunk","kind":"function"}
+{"path":"src/answerPack.js","name":"snippet","kind":"function"}
+{"path":"src/answerPack.js","name":"insideRoot","kind":"function"}
+{"path":"src/answerPack.js","name":"selectSourcePaths","kind":"function"}
+{"path":"src/answerPack.js","name":"extractSourcePaths","kind":"function"}
+{"path":"src/answerPack.js","name":"buildSourceSnippet","kind":"function"}
+{"path":"src/answerPack.js","name":"confidenceFor","kind":"function"}
+{"path":"src/answerPack.js","name":"answerPack","kind":"function"}
+{"path":"src/answerPack.js","name":"module.exports","kind":"commonjs-export"}
 {"path":"src/diff.js","name":"diff","kind":"function"}
 {"path":"src/diff.js","name":"module.exports","kind":"commonjs-export"}
 {"path":"src/doctor.js","name":"checkTool","kind":"function"}
@@ -18,6 +33,24 @@
 {"path":"src/git.js","name":"getHeadCommit","kind":"function"}
 {"path":"src/git.js","name":"listChangedFiles","kind":"function"}
 {"path":"src/git.js","name":"module.exports","kind":"commonjs-export"}
+{"path":"src/routes.js","name":"slash","kind":"function"}
+{"path":"src/routes.js","name":"lineNumberAt","kind":"function"}
+{"path":"src/routes.js","name":"findWorkspace","kind":"function"}
+{"path":"src/routes.js","name":"joinRoutes","kind":"function"}
+{"path":"src/routes.js","name":"normalizeRoutePath","kind":"function"}
+{"path":"src/routes.js","name":"parseLiteralStrings","kind":"function"}
+{"path":"src/routes.js","name":"isDynamicRoutePath","kind":"function"}
+{"path":"src/routes.js","name":"parseSpringAnnotationArgs","kind":"function"}
+{"path":"src/routes.js","name":"functionNameAfter","kind":"function"}
+{"path":"src/routes.js","name":"findClassPrefix","kind":"function"}
+{"path":"src/routes.js","name":"handlerAfter","kind":"function"}
+{"path":"src/routes.js","name":"pushRoute","kind":"function"}
+{"path":"src/routes.js","name":"extractSpringRoutes","kind":"function"}
+{"path":"src/routes.js","name":"extractExpressRoutes","kind":"function"}
+{"path":"src/routes.js","name":"parsePythonRouteMethods","kind":"function"}
+{"path":"src/routes.js","name":"extractPythonRoutes","kind":"function"}
+{"path":"src/routes.js","name":"extractRoutes","kind":"function"}
+{"path":"src/routes.js","name":"module.exports","kind":"commonjs-export"}
 {"path":"src/symbols.js","name":"pushSymbol","kind":"function"}
 {"path":"src/symbols.js","name":"extractJavaScriptSymbols","kind":"function"}
 {"path":"src/symbols.js","name":"extractPythonSymbols","kind":"function"}
@@ -56,6 +89,7 @@
 {"path":"src/wiki.js","name":"workspaceSummary","kind":"function"}
 {"path":"src/wiki.js","name":"renderWorkspaces","kind":"function"}
 {"path":"src/wiki.js","name":"renderWorkspaceEntrypoints","kind":"function"}
+{"path":"src/wiki.js","name":"renderRoutes","kind":"function"}
 {"path":"src/wiki.js","name":"createPages","kind":"function"}
 {"path":"src/wiki.js","name":"pageTitle","kind":"function"}
 {"path":"src/wiki.js","name":"createChunks","kind":"function"}
@@ -83,6 +117,9 @@
 {"path":"src/wiki.js","name":"hasSourcePath","kind":"function"}
 {"path":"src/wiki.js","name":"scoreSymbol","kind":"function"}
 {"path":"src/wiki.js","name":"extractSourcePaths","kind":"function"}
+{"path":"src/wiki.js","name":"isRouteQuery","kind":"function"}
+{"path":"src/wiki.js","name":"scoreRoute","kind":"function"}
+{"path":"src/wiki.js","name":"formatRouteEvidence","kind":"function"}
 {"path":"src/wiki.js","name":"formatQueryText","kind":"function"}
 {"path":"src/wiki.js","name":"query","kind":"function"}
 {"path":"src/wiki.js","name":"wiki","kind":"function"}
@@ -117,6 +154,11 @@
 {"path":"test/wiki.test.js","name":"nestedFrontendRepo","kind":"function"}
 {"path":"test/wiki.test.js","name":"capture","kind":"function"}
 {"path":"test/wiki.test.js","name":"captureText","kind":"function"}
+{"path":"test/wiki.test.js","name":"captureError","kind":"function"}
+{"path":"test/wiki.test.js","name":"runCli","kind":"function"}
 {"path":"test/wiki.test.js","name":"module.exports","kind":"commonjs-export"}
 {"path":"test/wiki.test.js","name":"main","kind":"commonjs-export"}
 {"path":"test/wiki.test.js","name":"extra","kind":"commonjs-export"}
+{"path":"test/wiki.test.js","name":"GET /users","kind":"route"}
+{"path":"test/wiki.test.js","name":"POST /users","kind":"route"}
+{"path":"test/wiki.test.js","name":"DELETE /users/:id","kind":"route"}
