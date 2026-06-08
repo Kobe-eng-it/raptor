@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROUTE_EXTS = new Set(['.java']);
+const ROUTE_EXTS = new Set(['.java', '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.py']);
 const SPRING_METHODS = {
   RequestMapping: 'ANY',
   GetMapping: 'GET',
@@ -12,6 +12,8 @@ const SPRING_METHODS = {
   DeleteMapping: 'DELETE',
   PatchMapping: 'PATCH',
 };
+const EXPRESS_METHODS = new Set(['get', 'post', 'put', 'delete', 'patch']);
+const PYTHON_METHODS = new Set(['get', 'post', 'put', 'delete', 'patch']);
 
 function slash(value) {
   return value.replace(/\\/g, '/');
@@ -59,6 +61,10 @@ function parseLiteralStrings(value) {
   return strings;
 }
 
+function isDynamicRoutePath(routePath) {
+  return /\$\{|[{}]/.test(routePath);
+}
+
 function parseSpringAnnotationArgs(rawArgs) {
   const result = {
     paths: [],
@@ -74,9 +80,9 @@ function parseSpringAnnotationArgs(rawArgs) {
   const routeMatch = args.match(/(?:value|path)\s*=\s*(\{[^}]+\}|["'][^"']*["'])/);
   const routeSource = routeMatch ? routeMatch[1] : args;
   result.paths = parseLiteralStrings(routeSource);
-  if (result.paths.some(routePath => /\$\{|[{}]/.test(routePath))) {
+  if (result.paths.some(isDynamicRoutePath)) {
     result.dynamic = true;
-    result.paths = result.paths.filter(routePath => !/\$\{|[{}]/.test(routePath));
+    result.paths = result.paths.filter(routePath => !isDynamicRoutePath(routePath));
   }
 
   const withoutStrings = routeSource.replace(/["'][^"']*["']/g, '').trim();
@@ -85,6 +91,16 @@ function parseSpringAnnotationArgs(rawArgs) {
   }
 
   return result;
+}
+
+function functionNameAfter(content, index) {
+  const tail = content.slice(index, index + 500);
+  const namedFunction = tail.match(/function\s+([A-Za-z_$][\w$]*)\s*\(/);
+  if (namedFunction) return namedFunction[1];
+  const methodFunction = tail.match(/(?:public|private|protected)?\s*(?:static\s+)?(?:async\s+)?(?:[\w<>\[\],.?]+\s+)+([A-Za-z_$][\w$]*)\s*\(/);
+  if (methodFunction) return methodFunction[1];
+  const pythonFunction = tail.match(/(?:async\s+)?def\s+([A-Za-z_]\w*)\s*\(/);
+  return pythonFunction ? pythonFunction[1] : undefined;
 }
 
 function findClassPrefix(content) {
@@ -110,9 +126,7 @@ function findClassPrefix(content) {
 }
 
 function handlerAfter(content, index) {
-  const tail = content.slice(index, index + 500);
-  const match = tail.match(/(?:public|private|protected)?\s*(?:static\s+)?(?:[\w<>\[\],.?]+\s+)+([A-Za-z_$][\w$]*)\s*\(/);
-  return match ? match[1] : undefined;
+  return functionNameAfter(content, index);
 }
 
 function pushRoute(routes, route, warningSink) {
@@ -167,6 +181,92 @@ function extractSpringRoutes(filePath, relPath, content, workspaces = []) {
   return { routes, warnings };
 }
 
+function extractExpressRoutes(filePath, relPath, content, workspaces = []) {
+  const routes = [];
+  const warnings = [];
+  const workspace = findWorkspace(relPath, workspaces);
+  const routeRe = /\b(?:app|router|server)\.(get|post|put|delete|patch)\s*\(\s*([^,\n)]+)/g;
+  let match;
+  while ((match = routeRe.exec(content)) !== null) {
+    const method = match[1].toUpperCase();
+    const line = lineNumberAt(content, match.index);
+    const source = match[2].trim();
+    const paths = parseLiteralStrings(source);
+    const dynamic = !paths.length || /[A-Za-z_$][\w$.]*|\+|`/.test(source.replace(/["'][^"']*["']/g, ''));
+    if (dynamic) {
+      warnings.push(`${relPath}:${line} Express ${match[1]} route uses unresolved expression`);
+    }
+    const routePaths = paths.filter(routePath => !isDynamicRoutePath(routePath));
+    if (paths.length !== routePaths.length) {
+      warnings.push(`${relPath}:${line} Express ${match[1]} route uses unresolved template placeholder`);
+    }
+
+    for (const routePath of (routePaths.length ? routePaths : [''])) {
+      routes.push({
+        method,
+        route: normalizeRoutePath(routePath) || '/',
+        path: relPath,
+        line,
+        handler: functionNameAfter(content, routeRe.lastIndex),
+        framework: 'express',
+        workspace,
+        confidence: dynamic || !routePaths.length ? 'low' : 'high',
+        reason: `Express ${match[1]} route call`,
+      });
+    }
+  }
+  return { routes, warnings };
+}
+
+function parsePythonRouteMethods(args) {
+  const methodsMatch = args.match(/methods\s*=\s*\[([^\]]+)\]/);
+  if (!methodsMatch) return ['GET'];
+  const methods = parseLiteralStrings(methodsMatch[1]).map(method => method.toUpperCase());
+  return methods.length ? methods : ['GET'];
+}
+
+function extractPythonRoutes(filePath, relPath, content, workspaces = []) {
+  const routes = [];
+  const warnings = [];
+  const workspace = findWorkspace(relPath, workspaces);
+  const decoratorRe = /@(app|router|api)\.(get|post|put|delete|patch|route)\s*\(([^)]*)\)/g;
+  let match;
+  while ((match = decoratorRe.exec(content)) !== null) {
+    const decoratorMethod = match[2];
+    const args = match[3] || '';
+    const line = lineNumberAt(content, match.index);
+    const paths = parseLiteralStrings(args).filter(routePath => routePath.startsWith('/'));
+    const routePaths = paths.filter(routePath => !isDynamicRoutePath(routePath));
+    const methods = decoratorMethod === 'route'
+      ? parsePythonRouteMethods(args)
+      : [decoratorMethod.toUpperCase()];
+    const withoutStrings = args.replace(/["'][^"']*["']/g, '').trim();
+    const dynamic = !routePaths.length || /[A-Za-z_]\w*|\+/.test(withoutStrings.replace(/methods\s*=\s*\[[^\]]+\]/, ''));
+    if (dynamic) {
+      warnings.push(`${relPath}:${line} Python route decorator uses unresolved expression`);
+    }
+
+    for (const routePath of (routePaths.length ? routePaths : [''])) {
+      for (const method of methods) {
+        routes.push({
+          method,
+          route: normalizeRoutePath(routePath) || '/',
+          path: relPath,
+          line,
+          handler: functionNameAfter(content, decoratorRe.lastIndex),
+          framework: 'python',
+          workspace,
+          confidence: dynamic || !routePaths.length ? 'low' : 'high',
+          reason: decoratorMethod === 'route'
+            ? 'Python route decorator with methods'
+            : `Python ${decoratorMethod} route decorator`,
+        });
+      }
+    }
+  }
+  return { routes, warnings };
+}
+
 function extractRoutes(files, rootPath, workspaces = []) {
   const routes = [];
   const warnings = [];
@@ -186,6 +286,14 @@ function extractRoutes(files, rootPath, workspaces = []) {
       const result = extractSpringRoutes(file, relPath, content, workspaces);
       routes.push(...result.routes);
       warnings.push(...result.warnings);
+    } else if (['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs'].includes(ext)) {
+      const result = extractExpressRoutes(file, relPath, content, workspaces);
+      routes.push(...result.routes);
+      warnings.push(...result.warnings);
+    } else if (ext === '.py') {
+      const result = extractPythonRoutes(file, relPath, content, workspaces);
+      routes.push(...result.routes);
+      warnings.push(...result.warnings);
     }
   }
 
@@ -194,6 +302,8 @@ function extractRoutes(files, rootPath, workspaces = []) {
 
 module.exports = {
   ROUTE_EXTS,
+  extractExpressRoutes,
+  extractPythonRoutes,
   extractRoutes,
   extractSpringRoutes,
 };

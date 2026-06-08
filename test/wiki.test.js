@@ -145,6 +145,86 @@ test('route extraction keeps unresolved Java Spring routes as low confidence wit
   assert.ok(result.warnings.some(warning => warning.includes('@GetMapping uses unresolved expression')));
 });
 
+test('route extraction detects Express JavaScript and TypeScript routes', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-routes-express-'));
+  const jsPath = path.join(dir, 'api', 'server.js');
+  const tsPath = path.join(dir, 'api', 'routes.ts');
+  fs.mkdirSync(path.dirname(jsPath), { recursive: true });
+  fs.writeFileSync(jsPath, [
+    'const express = require("express");',
+    'const app = express();',
+    'function listUsers(req, res) { res.send([]); }',
+    'app.get("/users", listUsers);',
+    'app.post("/users", function createUser(req, res) { res.send({}); });',
+  ].join('\n'), 'utf8');
+  fs.writeFileSync(tsPath, [
+    'const router = require("express").Router();',
+    'router.delete("/users/:id", removeUser);',
+  ].join('\n'), 'utf8');
+
+  const result = extractRoutes(walkDir(dir), dir, [{ root: 'api' }]);
+  const routeKeys = result.routes.map(route => `${route.method} ${route.route}`).sort();
+
+  assert.deepEqual(routeKeys, ['DELETE /users/:id', 'GET /users', 'POST /users']);
+  const getUsers = result.routes.find(route => route.method === 'GET' && route.route === '/users');
+  const createUser = result.routes.find(route => route.method === 'POST' && route.route === '/users');
+  assert.equal(getUsers.framework, 'express');
+  assert.equal(getUsers.workspace, 'api');
+  assert.equal(getUsers.confidence, 'high');
+  assert.equal(createUser.handler, 'createUser');
+  assert.deepEqual(result.warnings, []);
+});
+
+test('route extraction keeps unresolved Express routes as low confidence with warnings', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-routes-express-dynamic-'));
+  const sourcePath = path.join(dir, 'src', 'server.js');
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, [
+    'const pathPrefix = "/api";',
+    'app.get(pathPrefix + "/users", listUsers);',
+  ].join('\n'), 'utf8');
+
+  const result = extractRoutes(walkDir(dir), dir);
+
+  assert.equal(result.routes.length, 1);
+  assert.equal(result.routes[0].method, 'GET');
+  assert.equal(result.routes[0].route, '/users');
+  assert.equal(result.routes[0].confidence, 'low');
+  assert.ok(result.warnings.some(warning => warning.includes('Express get route uses unresolved expression')));
+});
+
+test('route extraction detects FastAPI and Flask-style Python routes', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-routes-python-'));
+  const sourcePath = path.join(dir, 'service', 'api.py');
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, [
+    'from fastapi import APIRouter',
+    'router = APIRouter()',
+    '@router.get("/users")',
+    'def list_users():',
+    '    return []',
+    '',
+    '@router.post("/users")',
+    'async def create_user():',
+    '    return {}',
+    '',
+    '@app.route("/roles", methods=["GET", "POST"])',
+    'def roles():',
+    '    return []',
+  ].join('\n'), 'utf8');
+
+  const result = extractRoutes(walkDir(dir), dir, [{ root: 'service' }]);
+  const routeKeys = result.routes.map(route => `${route.method} ${route.route}`);
+
+  assert.deepEqual(routeKeys, ['GET /users', 'POST /users', 'GET /roles', 'POST /roles']);
+  assert.equal(result.routes[0].framework, 'python');
+  assert.equal(result.routes[0].workspace, 'service');
+  assert.equal(result.routes[0].handler, 'list_users');
+  assert.equal(result.routes[1].handler, 'create_user');
+  assert.equal(result.routes[0].confidence, 'high');
+  assert.deepEqual(result.warnings, []);
+});
+
 test('wiki build creates pages, indexes, manifest, and llms exports', () => {
   const dir = tempRepo();
   const result = capture(() => wiki(['build', dir, '--json']));
