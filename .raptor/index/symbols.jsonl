@@ -152,6 +152,7 @@
 {"path":"src/write.js","name":"module.exports","kind":"commonjs-export"}
 {"path":"test/wiki.test.js","name":"tempRepo","kind":"function"}
 {"path":"test/wiki.test.js","name":"nestedFrontendRepo","kind":"function"}
+{"path":"test/wiki.test.js","name":"deepSpringRepo","kind":"function"}
 {"path":"test/wiki.test.js","name":"capture","kind":"function"}
 {"path":"test/wiki.test.js","name":"captureText","kind":"function"}
 {"path":"test/wiki.test.js","name":"captureError","kind":"function"}

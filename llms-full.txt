@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.186Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.827Z
 sources:
   - package.json
   - bin/raptor.js
@@ -51,8 +51,8 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.285Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.912Z
 sources:
   - README.md
   - docs/api.md
@@ -87,8 +87,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.219Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.861Z
 sources:
   - bin/raptor.js
 source_hashes:
@@ -112,8 +112,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.158Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.805Z
 sources:
   - package.json
   - README.md
@@ -156,12 +156,12 @@ None detected.
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.230Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.871Z
 sources:
   - test/wiki.test.js
 source_hashes:
-  test/wiki.test.js: ae31ba76c61f049e
+  test/wiki.test.js: b3fb92f3edf8ce9c
 confidence: medium
 ---
 
@@ -175,16 +175,16 @@ Detected 6 route(s).
 
 ### .
 
-- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):206 (express, high) - handler `createUser`; Express get route call
-- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):207 (express, high) - handler `createUser`; Express post route call
-- `DELETE /users/:id` - [test/wiki.test.js](../../test/wiki.test.js):211 (express, high) - handler unknown; Express delete route call
-- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):233 (express, low) - handler unknown; Express get route call
-- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):252 (express, high) - handler `list_users`; Express get route call
-- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):256 (express, high) - handler `create_user`; Express post route call
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):235 (express, high) - handler `createUser`; Express get route call
+- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):236 (express, high) - handler `createUser`; Express post route call
+- `DELETE /users/:id` - [test/wiki.test.js](../../test/wiki.test.js):240 (express, high) - handler unknown; Express delete route call
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):262 (express, low) - handler unknown; Express get route call
+- `GET /users` - [test/wiki.test.js](../../test/wiki.test.js):281 (express, high) - handler `list_users`; Express get route call
+- `POST /users` - [test/wiki.test.js](../../test/wiki.test.js):285 (express, high) - handler `create_user`; Express post route call
 
 ## Build Warnings
 
-- test/wiki.test.js:233 Express get route uses unresolved expression
+- test/wiki.test.js:262 Express get route uses unresolved expression
 
 ## Related Pages
 
@@ -195,8 +195,8 @@ Detected 6 route(s).
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.243Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.881Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -219,10 +219,10 @@ source_hashes:
   src/routes.js: d8d9a24027d71ae3
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 06e923e8684f09f1
+  src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: ae31ba76c61f049e
+  test/wiki.test.js: b3fb92f3edf8ce9c
 confidence: medium
 ---
 
@@ -419,6 +419,7 @@ confidence: medium
 
 - `tempRepo` (function)
 - `nestedFrontendRepo` (function)
+- `deepSpringRepo` (function)
 - `capture` (function)
 - `captureText` (function)
 - `captureError` (function)
@@ -434,8 +435,8 @@ confidence: medium
 
 ---
 status: draft
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.203Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.843Z
 sources:
   - package.json
   - bin/raptor.js

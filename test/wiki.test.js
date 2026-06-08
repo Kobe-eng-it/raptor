@@ -51,6 +51,35 @@ function nestedFrontendRepo() {
   return dir;
 }
 
+function deepSpringRepo() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-deep-spring-'));
+  const relPath = path.join(
+    'documentale',
+    'repository',
+    'src',
+    'main',
+    'java',
+    'com',
+    'eng',
+    'documentale',
+    'repository',
+    'controller',
+    'UserController.java',
+  );
+  const sourcePath = path.join(dir, relPath);
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, [
+    'import org.springframework.web.bind.annotation.*;',
+    '@RestController',
+    '@RequestMapping("/user")',
+    'public class UserController {',
+    '  @GetMapping',
+    '  public Object getUser() { return null; }',
+    '}',
+  ].join('\n'), 'utf8');
+  return dir;
+}
+
 function capture(fn) {
   const original = console.log;
   const lines = [];
@@ -314,6 +343,22 @@ test('wiki build renders routes page when no routes are detected', () => {
   assert.equal(result.result.index.routes, 0);
   assert.ok(routesPage.includes('Detected 0 route(s).'));
   assert.ok(routesPage.includes('No routes detected.'));
+});
+
+test('wiki build detects deeply nested Spring controllers', () => {
+  const dir = deepSpringRepo();
+  const result = capture(() => wiki(['build', dir, '--json']));
+  const routesText = fs.readFileSync(path.join(dir, '.raptor', 'index', 'routes.jsonl'), 'utf8').trim();
+  const routes = routesText.split(/\r?\n/).map(line => JSON.parse(line));
+  const relPath = 'documentale/repository/src/main/java/com/eng/documentale/repository/controller/UserController.java';
+  const routesPage = fs.readFileSync(path.join(dir, '.raptor', 'wiki', 'routes.md'), 'utf8');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.index.routes, 1);
+  assert.equal(routes[0].method, 'GET');
+  assert.equal(routes[0].route, '/user');
+  assert.equal(routes[0].path, relPath);
+  assert.ok(routesPage.includes(`[${relPath}](../../${relPath}):5`));
 });
 
 test('wiki build renders nested workspaces and groups entrypoints by workspace', () => {

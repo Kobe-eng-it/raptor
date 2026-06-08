@@ -21,6 +21,7 @@ const SCHEMA_VERSION = 'v0.1.0';
 const WIKI_DIR = path.join('.raptor', 'wiki');
 const INDEX_DIR = path.join('.raptor', 'index');
 const PAGE_STATUS = new Set(['draft', 'reviewed', 'stale']);
+const WIKI_WALK_MAX_DEPTH = 14;
 
 function nowIso() {
   return new Date().toISOString();
@@ -75,7 +76,8 @@ function createFrontmatter(meta) {
   const keys = ['status', 'source_commit', 'last_generated', 'sources', 'source_hashes', 'confidence'];
   const lines = ['---'];
   for (const key of keys) {
-    lines.push(`${key}: ${yamlValue(meta[key])}`);
+    const value = yamlValue(meta[key]);
+    lines.push(value.startsWith('\n') ? `${key}:${value}` : `${key}: ${value}`);
   }
   lines.push('---');
   return lines.join('\n');
@@ -139,7 +141,7 @@ function writePage(rootPath, filename, meta, body) {
 }
 
 function buildContext(rootPath) {
-  const files = walkDir(rootPath);
+  const files = walkDir(rootPath, WIKI_WALK_MAX_DEPTH);
   const relFiles = files.map(file => slash(path.relative(rootPath, file)));
   const packageInfo = getPackageInfo(rootPath);
   const languages = detectLanguages(files, rootPath);

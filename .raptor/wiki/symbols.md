@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 44a8881444ca8cd77c368f53c5615ba2ea3147fb
-last_generated: 2026-06-08T10:58:35.243Z
+source_commit: 0252b5e9564268323ac58dabf3b0da48288d5d16
+last_generated: 2026-06-08T13:51:32.881Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -24,10 +24,10 @@ source_hashes:
   src/routes.js: d8d9a24027d71ae3
   src/symbols.js: 3eb92f85261b3da5
   src/util.js: baaf733a6b4510dc
-  src/wiki.js: 06e923e8684f09f1
+  src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: ae31ba76c61f049e
+  test/wiki.test.js: b3fb92f3edf8ce9c
 confidence: medium
 ---
 
@@ -224,6 +224,7 @@ confidence: medium
 
 - `tempRepo` (function)
 - `nestedFrontendRepo` (function)
+- `deepSpringRepo` (function)
 - `capture` (function)
 - `captureText` (function)
 - `captureError` (function)

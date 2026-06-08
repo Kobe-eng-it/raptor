@@ -1,11 +1,11 @@
 {
   "schema_version": "v0.1.0",
-  "source_commit": "44a8881444ca8cd77c368f53c5615ba2ea3147fb",
-  "generated_at": "2026-06-08T10:58:35.374Z",
+  "source_commit": "0252b5e9564268323ac58dabf3b0da48288d5d16",
+  "generated_at": "2026-06-08T13:51:33.001Z",
   "wiki_pages": 7,
   "index": {
     "chunks": 29,
-    "symbols": 164,
+    "symbols": 165,
     "routes": 6
   }
 }
