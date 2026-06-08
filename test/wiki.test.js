@@ -241,6 +241,7 @@ test('wiki build creates pages, indexes, manifest, and llms exports', () => {
   assert.equal(result.ok, true);
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'overview.md')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'workspaces.md')));
+  assert.ok(fs.existsSync(path.join(dir, '.raptor', 'wiki', 'routes.md')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'chunks.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'symbols.jsonl')));
   assert.ok(fs.existsSync(path.join(dir, '.raptor', 'index', 'routes.jsonl')));
@@ -254,6 +255,26 @@ test('wiki build creates pages, indexes, manifest, and llms exports', () => {
     .split(/\r?\n/)
     .map(line => JSON.parse(line));
   assert.deepEqual(routes.map(route => `${route.method} ${route.route}`), ['GET /api/user']);
+
+  const routesPage = fs.readFileSync(path.join(dir, '.raptor', 'wiki', 'routes.md'), 'utf8');
+  assert.ok(routesPage.includes('# Routes'));
+  assert.ok(routesPage.includes('`GET /api/user`'));
+  assert.ok(routesPage.includes('[backend/src/UserController.java](../../backend/src/UserController.java):5'));
+  assert.ok(fs.readFileSync(path.join(dir, 'llms.txt'), 'utf8').includes('[Routes](./.raptor/wiki/routes.md)'));
+});
+
+test('wiki build renders routes page when no routes are detected', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-no-routes-'));
+  fs.mkdirSync(path.join(dir, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'src', 'plain.txt'), 'hello\n', 'utf8');
+
+  const result = capture(() => wiki(['build', dir, '--json']));
+  const routesPage = fs.readFileSync(path.join(dir, '.raptor', 'wiki', 'routes.md'), 'utf8');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.index.routes, 0);
+  assert.ok(routesPage.includes('Detected 0 route(s).'));
+  assert.ok(routesPage.includes('No routes detected.'));
 });
 
 test('wiki build renders nested workspaces and groups entrypoints by workspace', () => {
@@ -297,6 +318,26 @@ test('wiki validate reports stale and missing nested workspace sources', () => {
   const missingWorkspacePage = missingResult.result.pages.find(page => page.page === 'workspaces.md');
   assert.ok(missingWorkspacePage.errors.some(error => error.includes('missing sources')));
   assert.ok(missingResult.result.errors.some(error => error.includes('frontend/gui/src/main.tsx')));
+});
+
+test('wiki validate reports stale and missing route sources', () => {
+  const staleDir = tempRepo();
+  capture(() => wiki(['build', staleDir, '--json']));
+  fs.appendFileSync(path.join(staleDir, 'backend', 'src', 'UserController.java'), '\n// changed\n', 'utf8');
+  const staleResult = capture(() => wiki(['validate', staleDir, '--json']));
+  const staleRoutesPage = staleResult.result.pages.find(page => page.page === 'routes.md');
+
+  assert.equal(staleRoutesPage.stale, true);
+  assert.ok(staleRoutesPage.warnings.some(warning => warning.includes('backend/src/UserController.java')));
+
+  const missingDir = tempRepo();
+  capture(() => wiki(['build', missingDir, '--json']));
+  fs.unlinkSync(path.join(missingDir, 'backend', 'src', 'UserController.java'));
+  const missingResult = capture(() => wiki(['validate', missingDir, '--json']));
+  const missingRoutesPage = missingResult.result.pages.find(page => page.page === 'routes.md');
+
+  assert.ok(missingRoutesPage.errors.some(error => error.includes('missing sources')));
+  assert.ok(missingResult.result.errors.some(error => error.includes('backend/src/UserController.java')));
 });
 
 test('query ranks entrypoint page for CLI entrypoint question and warns on draft pages', () => {

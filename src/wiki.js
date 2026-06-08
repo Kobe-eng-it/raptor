@@ -252,6 +252,25 @@ function renderWorkspaceEntrypoints(workspaces, legacyEntryPoints = []) {
   return sections.length ? sections.join('\n\n') : 'None detected.';
 }
 
+function renderRoutes(routes) {
+  if (!routes.length) return 'No routes detected.';
+  const byWorkspace = new Map();
+  for (const route of routes) {
+    const key = route.workspace || '.';
+    if (!byWorkspace.has(key)) byWorkspace.set(key, []);
+    byWorkspace.get(key).push(route);
+  }
+
+  return [...byWorkspace.entries()].map(([workspace, workspaceRoutes]) => {
+    const lines = [`### ${workspace}`, ''];
+    for (const route of workspaceRoutes) {
+      const handler = route.handler ? ` handler \`${route.handler}\`` : ' handler unknown';
+      lines.push(`- \`${route.method} ${route.route}\` - ${sourceLink(route.path)}:${route.line} (${route.framework}, ${route.confidence}) -${handler}; ${route.reason}`);
+    }
+    return lines.join('\n');
+  }).join('\n\n');
+}
+
 function createPages(context) {
   const packageSources = ['package.json', 'go.mod', 'Cargo.toml', 'pyproject.toml', 'setup.py']
     .filter(source => fs.existsSync(path.join(context.rootPath, source)));
@@ -265,6 +284,7 @@ function createPages(context) {
     workspace.manifest,
     ...workspace.entrypoints.map(entry => entry.path),
   ]).filter(Boolean))];
+  const routeSources = [...new Set(context.routes.map(route => route.path))];
 
   const languageLines = context.languages.map(lang => `${lang.name}: ${lang.files} files (${lang.percentage}%)`);
   const topDirs = [...new Set(context.relFiles.map(file => file.split('/')[0]).filter(Boolean))]
@@ -345,6 +365,7 @@ ${markdownList(context.workspaceWarnings)}
 ## Related Pages
 
 - [Entrypoints](entrypoints.md)
+- [Routes](routes.md)
 - [Architecture](architecture.md)`,
     },
     {
@@ -360,6 +381,29 @@ ${renderWorkspaceEntrypoints(context.workspaces, context.entryPoints)}
 ## Notes
 
 These files are likely startup, command-line, or application entrypoints based on conventional filenames. For CLI projects, the entrypoint is the file launched by the package binary or shell wrapper.`,
+    },
+    {
+      filename: 'routes.md',
+      sources: routeSources,
+      confidence: context.routes.length ? 'medium' : 'low',
+      body: `# Routes
+
+## Summary
+
+Detected ${context.routes.length} route(s).
+
+## Detected Routes
+
+${renderRoutes(context.routes)}
+
+## Build Warnings
+
+${markdownList(context.routeWarnings)}
+
+## Related Pages
+
+- [Architecture](architecture.md)
+- [Symbols](symbols.md)`,
     },
     {
       filename: 'symbols.md',

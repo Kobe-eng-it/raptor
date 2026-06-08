@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T09:56:48Z
+last_modified: 2026-06-08T10:02:49Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -22,7 +22,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
       - command: ["npm", "test"]
         covers: ["R1.AC2", "R1.AC3", "R1.AC4", "R1.AC5"]
 
-- [ ] 2. Integrate routes into wiki build artifacts
+- [x] 2. Integrate routes into wiki build artifacts
   - [x] 2.1 Add route extraction to build context and write `.raptor/index/routes.jsonl`
     - Requirements: `R2.AC1`, `R2.AC3`, `R5.AC1`, `R5.AC2`, `R5.AC3`, `NFR2`, `C2`, `C3`, `C4`
     - Design: `src/wiki.js` Build Integration, Data Models, Error Handling
@@ -30,7 +30,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
       - command: ["npm", "test"]
         covers: ["R2.AC1", "R2.AC3", "R5.AC1", "R5.AC2", "R5.AC3"]
 
-  - [ ] 2.2 Generate `.raptor/wiki/routes.md` and include it in exports, status, review, and validation flows
+  - [x] 2.2 Generate `.raptor/wiki/routes.md` and include it in exports, status, review, and validation flows
     - Requirements: `R2.AC2`, `R2.AC3`, `R2.AC4`, `R2.AC5`, `R5.AC1`, `R5.AC2`, `R5.AC3`, `R5.AC4`, `C3`
     - Design: `src/wiki.js` Build Integration, Failure Modes And Tradeoffs, Verification Plan
     - Verification:
