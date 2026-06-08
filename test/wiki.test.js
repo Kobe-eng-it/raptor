@@ -8,6 +8,7 @@ const test = require('node:test');
 
 const { wiki, query, parseFrontmatter, createFrontmatter, tokenize } = require('../src/wiki');
 const { extractSymbols } = require('../src/symbols');
+const { extractRoutes } = require('../src/routes');
 const { walkDir } = require('../src/util');
 const { discoverWorkspaces } = require('../src/workspaces');
 
@@ -85,6 +86,63 @@ test('symbol extraction covers CommonJS, Python, and CLI fixture symbols', () =>
   assert.ok(jsSymbols.includes('main'));
   assert.ok(pySymbols.includes('handle_request'));
   assert.ok(pySymbols.includes('Worker'));
+});
+
+test('route extraction detects Java Spring class prefixes and method mappings', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-routes-spring-'));
+  const sourcePath = path.join(dir, 'backend', 'src', 'UserController.java');
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, [
+    'import org.springframework.web.bind.annotation.*;',
+    '@RestController',
+    '@RequestMapping("/api")',
+    'public class UserController {',
+    '  @GetMapping("/user")',
+    '  public User getUser() { return null; }',
+    '',
+    '  @PostMapping(path = "/users")',
+    '  public User createUser() { return null; }',
+    '',
+    '  @RequestMapping(value = "/roles", method = RequestMethod.PUT)',
+    '  public void updateRoles() {}',
+    '}',
+  ].join('\n'), 'utf8');
+
+  const result = extractRoutes(walkDir(dir), dir, [{ root: 'backend' }]);
+  const routeKeys = result.routes.map(route => `${route.method} ${route.route}`);
+
+  assert.deepEqual(routeKeys, ['GET /api/user', 'POST /api/users', 'PUT /api/roles']);
+  assert.equal(result.routes[0].path, 'backend/src/UserController.java');
+  assert.equal(result.routes[0].handler, 'getUser');
+  assert.equal(result.routes[0].framework, 'spring');
+  assert.equal(result.routes[0].workspace, 'backend');
+  assert.equal(result.routes[0].confidence, 'high');
+  assert.equal(result.routes[0].line, 5);
+  assert.deepEqual(result.warnings, []);
+});
+
+test('route extraction keeps unresolved Java Spring routes as low confidence with warnings', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-routes-dynamic-'));
+  const sourcePath = path.join(dir, 'src', 'DynamicController.java');
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, [
+    'import org.springframework.web.bind.annotation.*;',
+    '@RestController',
+    '@RequestMapping("${api.prefix}")',
+    'public class DynamicController {',
+    '  @GetMapping(USER_PATH)',
+    '  public Object getDynamic() { return null; }',
+    '}',
+  ].join('\n'), 'utf8');
+
+  const result = extractRoutes(walkDir(dir), dir);
+
+  assert.equal(result.routes.length, 1);
+  assert.equal(result.routes[0].method, 'GET');
+  assert.equal(result.routes[0].route, '/');
+  assert.equal(result.routes[0].confidence, 'low');
+  assert.ok(result.warnings.some(warning => warning.includes('class-level @RequestMapping uses unresolved expression')));
+  assert.ok(result.warnings.some(warning => warning.includes('@GetMapping uses unresolved expression')));
 });
 
 test('wiki build creates pages, indexes, manifest, and llms exports', () => {

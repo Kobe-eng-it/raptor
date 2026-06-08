@@ -1,14 +1,14 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T07:26:44Z
+last_modified: 2026-06-08T07:34:35Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
 # Implementation Plan
 
 - [ ] 1. Add deterministic route extraction
-  - [ ] 1.1 Implement `src/routes.js` with normalized route records and Java Spring extraction
+  - [x] 1.1 Implement `src/routes.js` with normalized route records and Java Spring extraction
     - Requirements: `R1.AC1`, `R1.AC4`, `R1.AC5`, `R1.AC6`, `R1.AC7`, `NFR1`, `NFR2`, `NFR3`, `NFR5`, `C1`, `C2`, `C4`, `C5`
     - Design: `src/routes.js`, Route Extractors, Data Models, Security Considerations
     - Verification:
