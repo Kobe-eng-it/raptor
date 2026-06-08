@@ -372,6 +372,22 @@ test('query treats app started questions as startup queries', () => {
   assert.ok(result.result.results.some(row => row.excerpt.includes('frontend/gui/src/main.tsx')));
 });
 
+test('query surfaces route evidence for procedural account questions', () => {
+  const dir = tempRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  const result = capture(() => query(['Come si crea un utenza?', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.results[0].page, 'routes.md');
+  assert.ok(result.result.routes.some(route => (
+    route.method === 'GET'
+    && route.route === '/api/user'
+    && route.path === 'backend/src/UserController.java'
+  )));
+  assert.ok(result.result.results[0].sources.includes('backend/src/UserController.java'));
+  assert.ok(result.result.warnings[0].includes('routes.md'));
+});
+
 test('wiki review marks pages reviewed and refreshes query chunk warnings', () => {
   const dir = nestedFrontendRepo();
   capture(() => wiki(['build', dir, '--json']));

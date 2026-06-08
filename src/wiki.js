@@ -841,7 +841,7 @@ function snippet(text, terms) {
 }
 
 function hasSourcePath(text) {
-  return /[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go)\b/.test(text);
+  return /[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go|java)\b/.test(text);
 }
 
 function scoreSymbol(symbol, terms) {
@@ -861,8 +861,8 @@ function extractSourcePaths(text) {
   const sources = [];
   const seen = new Set();
   const patterns = [
-    /\[[^\]]+\]\(\.\.\/\.\.\/([^)]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go))\)/g,
-    /\b([A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go))\b/g,
+    /\[[^\]]+\]\(\.\.\/\.\.\/([^)]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go|java))\)/g,
+    /\b([A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|go|java))\b/g,
   ];
   for (const pattern of patterns) {
     let match;
@@ -873,6 +873,54 @@ function extractSourcePaths(text) {
     }
   }
   return sources;
+}
+
+const ROUTE_QUERY_TERMS = new Set([
+  'api', 'apis', 'endpoint', 'endpoints', 'route', 'routes', 'controller', 'controllers',
+  'backend', 'service', 'services', 'post', 'get', 'put', 'delete', 'patch',
+]);
+
+const ACCOUNT_QUERY_TERMS = new Set([
+  'account', 'accounts', 'auth', 'authentication', 'profile', 'profiles', 'role', 'roles',
+  'user', 'users', 'utenza', 'utenze', 'utente', 'utenti',
+]);
+
+const PROCEDURAL_QUERY_TERMS = new Set([
+  'add', 'create', 'creation', 'new', 'register', 'signup',
+]);
+
+function isRouteQuery(terms) {
+  const hasRouteTerm = terms.some(term => ROUTE_QUERY_TERMS.has(term));
+  const hasAccountTerm = terms.some(term => ACCOUNT_QUERY_TERMS.has(term));
+  const hasProceduralTerm = terms.some(term => PROCEDURAL_QUERY_TERMS.has(term));
+  return hasRouteTerm || (hasAccountTerm && hasProceduralTerm);
+}
+
+function scoreRoute(route, terms, routeRelated) {
+  if (!routeRelated) return 0;
+
+  const method = String(route.method || '').toLowerCase();
+  const routePath = String(route.route || '').toLowerCase();
+  const sourcePath = String(route.path || '').toLowerCase();
+  const handler = String(route.handler || '').toLowerCase();
+  const framework = String(route.framework || '').toLowerCase();
+  const haystackTokens = tokenize([method, routePath, sourcePath, handler, framework].join(' '));
+  let score = 0;
+
+  for (const term of terms) {
+    if (method === term) score += 30;
+    if (routePath === term || routePath === `/${term}`) score += 60;
+    if (routePath.includes(term)) score += 35;
+    if (handler === term) score += 45;
+    if (handler.includes(term)) score += 20;
+    if (sourcePath.includes(term)) score += 12;
+    if (framework.includes(term)) score += 8;
+    score += haystackTokens.filter(token => token.includes(term)).length * 4;
+  }
+
+  if (route.confidence === 'high') score += 8;
+  if (route.confidence === 'low') score -= 4;
+  return score;
 }
 
 function formatQueryText(data) {
@@ -936,13 +984,26 @@ function query(argv) {
   const startupRelated = terms.some(term => startupTerms.has(term));
   const chunks = loadJsonl(chunksPath);
   const symbols = loadJsonl(path.join(targetPath, INDEX_DIR, 'symbols.jsonl'));
-  const symbolHits = symbols
+  const routes = loadJsonl(path.join(targetPath, INDEX_DIR, 'routes.jsonl'));
+  const routeRelated = isRouteQuery(terms);
+  const routeHits = routes
+    .map(route => ({ ...route, _score: scoreRoute(route, terms, routeRelated) }))
+    .filter(route => route._score > 0)
+    .sort((a, b) => b._score - a._score)
+    .map(({ _score, ...route }) => route);
+  const scoredSymbols = symbols
     .map(symbol => ({ ...symbol, _score: scoreSymbol(symbol, terms) }))
     .filter(symbol => symbol._score > 0)
-    .sort((a, b) => b._score - a._score)
+    .sort((a, b) => b._score - a._score);
+  const symbolSourceScores = new Map();
+  for (const symbol of scoredSymbols) {
+    symbolSourceScores.set(symbol.path, Math.max(symbolSourceScores.get(symbol.path) || 0, symbol._score));
+  }
+  const symbolHits = scoredSymbols
     .map(({ _score, ...symbol }) => symbol);
 
   const results = chunks.map(chunk => {
+    const sources = extractSourcePaths(chunk.text);
     const haystacks = {
       title: tokenize(chunk.title),
       heading: tokenize(chunk.heading),
@@ -960,6 +1021,14 @@ function query(argv) {
       score += haystacks.text.filter(token => token.includes(term)).length;
       if (launchTerms.has(term) && ['entrypoints.md', 'workspaces.md'].includes(chunk.page)) score += 18;
       if (['entrypoints.md', 'workspaces.md'].includes(chunk.page) && haystacks.text.some(token => token.includes('/') && token.includes(term))) score += 12;
+      if (routeRelated && chunk.page === 'routes.md' && haystacks.text.some(token => token.includes('/') && token.includes(term))) score += 20;
+    }
+    if (routeRelated && chunk.page === 'routes.md') score += routeHits.length ? 45 : 20;
+    if (routeRelated && chunk.page === 'routes.md' && hasSourcePath(chunk.text)) score += 25;
+    if (routeRelated && chunk.page === 'symbols.md' && routeHits.length) score -= 20;
+    if (chunk.page === 'symbols.md') {
+      const sourceScore = Math.max(0, ...sources.map(source => symbolSourceScores.get(source) || 0));
+      score += Math.min(120, sourceScore);
     }
     if (startupRelated && chunk.page === 'entrypoints.md') score += 40;
     if (startupRelated && chunk.page === 'workspaces.md') score += 20;
@@ -974,7 +1043,7 @@ function query(argv) {
       status: chunk.status,
       score,
       excerpt,
-      sources: extractSourcePaths(chunk.text),
+      sources,
     };
   }).filter(result => result.score > 0)
     .sort((a, b) => b.score - a.score)
@@ -984,6 +1053,7 @@ function query(argv) {
   const data = {
     question,
     results,
+    routes: routeHits.slice(0, 20),
     symbols: symbolHits.slice(0, 20),
     warnings: staleOrDraft.length ? [`Results include non-reviewed pages: ${staleOrDraft.join(', ')}`] : [],
   };

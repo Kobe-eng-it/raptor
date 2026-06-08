@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T10:02:49Z
+last_modified: 2026-06-08T10:10:40Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -38,7 +38,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
         covers: ["R2.AC2", "R2.AC3", "R2.AC4", "R2.AC5", "R5.AC1", "R5.AC2", "R5.AC3", "R5.AC4"]
 
 - [ ] 3. Make query route-aware
-  - [ ] 3.1 Load and score route records in `raptor query --json`
+  - [x] 3.1 Load and score route records in `raptor query --json`
     - Requirements: `R3.AC1`, `R3.AC2`, `R3.AC3`, `R3.AC5`, `NFR1`, `NFR2`, `C2`, `C4`
     - Design: Query Integration, Data Models, Error Handling
     - Verification:
