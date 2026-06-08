@@ -7,6 +7,7 @@ const path = require('path');
 const test = require('node:test');
 
 const { wiki, query, parseFrontmatter, createFrontmatter, tokenize } = require('../src/wiki');
+const { answerPack } = require('../src/answerPack');
 const { extractSymbols } = require('../src/symbols');
 const { extractRoutes } = require('../src/routes');
 const { walkDir } = require('../src/util');
@@ -72,6 +73,27 @@ function captureText(fn) {
     console.log = original;
   }
   return lines.join('\n');
+}
+
+function captureError(fn) {
+  const originalError = console.error;
+  const originalExit = process.exit;
+  const lines = [];
+  let exitCode = null;
+  console.error = (value) => lines.push(value);
+  process.exit = (code) => {
+    exitCode = code;
+    throw new Error(`process.exit ${code}`);
+  };
+  try {
+    fn();
+  } catch (error) {
+    if (!String(error.message).startsWith('process.exit')) throw error;
+  } finally {
+    console.error = originalError;
+    process.exit = originalExit;
+  }
+  return { exitCode, output: JSON.parse(lines.join('\n')) };
 }
 
 test('frontmatter round-trips required wiki metadata', () => {
@@ -464,6 +486,46 @@ test('query sources do not use paths truncated by excerpts', () => {
 
   assert.ok(sourcePaths.includes(relPath));
   assert.ok(!sourcePaths.some(source => source === 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/create-user.js'));
+});
+
+test('answer-pack returns route-first bounded evidence bundle', () => {
+  const dir = tempRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  const result = capture(() => answerPack(['Come si crea un utenza?', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.question, 'Come si crea un utenza?');
+  assert.equal(result.result.path, dir);
+  assert.equal(result.result.confidence, 'high');
+  assert.equal(result.result.routes[0].path, 'backend/src/UserController.java');
+  assert.equal(result.result.routes[0].route, '/api/user');
+  assert.equal(result.result.sources[0].path, 'backend/src/UserController.java');
+  assert.equal(result.result.sources[0].snippets.length, 1);
+  assert.ok(result.result.sources[0].snippets[0].text.includes('@GetMapping("/user")'));
+  assert.ok(result.result.sources[0].snippets[0].text.length <= 1200);
+  assert.ok(result.result.wiki_results.some(row => row.page === 'routes.md'));
+  assert.ok(result.result.warnings[0].includes('non-reviewed'));
+});
+
+test('answer-pack reports low confidence when direct evidence is missing', () => {
+  const dir = tempRepo();
+  capture(() => wiki(['build', dir, '--json']));
+  const result = capture(() => answerPack(['zzzz nonexistent workflow', dir, '--json']));
+
+  assert.equal(result.ok, true);
+  assert.equal(result.result.confidence, 'low');
+  assert.deepEqual(result.result.routes, []);
+  assert.deepEqual(result.result.symbols, []);
+  assert.ok(result.result.warnings.some(warning => warning.includes('Insufficient direct route or symbol evidence')));
+});
+
+test('answer-pack reports missing index with build instruction', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-answer-no-index-'));
+  const result = captureError(() => answerPack(['where is user created?', dir, '--json']));
+
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.output.ok, false);
+  assert.ok(result.output.error.includes('Run "raptor wiki build" first'));
 });
 
 test('query tokenizer removes generic question words', () => {

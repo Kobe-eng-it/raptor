@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T10:17:57Z
+last_modified: 2026-06-08T10:24:00Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -53,7 +53,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
         covers: ["R3.AC4", "R3.AC5"]
 
 - [ ] 4. Add answer-pack command
-  - [ ] 4.1 Implement `src/answerPack.js` with bounded source snippet selection and confidence scoring
+  - [x] 4.1 Implement `src/answerPack.js` with bounded source snippet selection and confidence scoring
     - Requirements: `R4.AC1`, `R4.AC2`, `R4.AC3`, `R4.AC4`, `R4.AC5`, `NFR1`, `NFR2`, `NFR4`, `NFR5`, `C1`, `C2`, `C4`
     - Design: `src/answerPack.js`, Data Models, Error Handling, Security Considerations
     - Verification:
