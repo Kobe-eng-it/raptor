@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T10:58:36Z
+last_modified: 2026-06-08T13:04:01Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -86,8 +86,8 @@ source_design_approved_at: 2026-06-08T07:24:06Z
       - command: ["node", "bin/raptor.js", "wiki", "validate", "--json"]
         covers: ["R5.AC1", "R5.AC2", "R5.AC3", "R5.AC4"]
 
-- [ ] 6. Perform final smoke checks and repository handoff
-  - [ ] 6.1 Run local smoke checks for route query and answer-pack on a fixture-backed or current repository build
+- [x] 6. Perform final smoke checks and repository handoff
+  - [x] 6.1 Run local smoke checks for route query and answer-pack on a fixture-backed or current repository build
     - Requirements: `R3.AC1`, `R3.AC2`, `R3.AC3`, `R3.AC4`, `R4.AC1`, `R4.AC2`, `R4.AC3`, `R4.AC5`
     - Design: Verification Plan, Operational evidence
     - Verification:
