@@ -20,3 +20,8 @@ Review this file before non-trivial work when the current request matches past m
 - Lesson: Proof commands that mutate and then read workflow state must run sequentially
 - Guardrail: Do not parallelize Walden verification commands when a later command depends on state written by an earlier command
 
+### 2026-06-08T15:42:36Z | doc-builder-integration | tasks
+- Trigger: Walden validation found missing task coverage for R1.AC5, R2.AC4, R4.AC2, and R4.AC3
+- Lesson: Task plans for skill workflows must explicitly cover error, unsupported-option, and evidence-threshold acceptance criteria, not only the happy path
+- Guardrail: Before opening task review, compare each task's Requirements and covers lists against all acceptance criteria including unwanted behavior and threshold rules
+
