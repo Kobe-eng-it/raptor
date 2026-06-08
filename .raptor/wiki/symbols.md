@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:10.059Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.219Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -23,11 +23,11 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/routes.js: d8d9a24027d71ae3
   src/symbols.js: 3eb92f85261b3da5
-  src/util.js: baaf733a6b4510dc
+  src/util.js: 584d1e1f1a6f4da0
   src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 64edc43aa78f2ca7
+  test/wiki.test.js: c7140064dc142d4d
 confidence: medium
 ---
 
@@ -119,6 +119,7 @@ confidence: medium
 
 ### src/util.js
 
+- `shouldIgnoreRelPath` (function)
 - `walkDir` (function)
 - `detectLanguages` (function)
 - `detectFramework` (function)

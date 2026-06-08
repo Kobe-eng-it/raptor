@@ -59,6 +59,7 @@
 {"path":"src/symbols.js","name":"extractSymbols","kind":"function"}
 {"path":"src/symbols.js","name":"isSymbolFile","kind":"function"}
 {"path":"src/symbols.js","name":"module.exports","kind":"commonjs-export"}
+{"path":"src/util.js","name":"shouldIgnoreRelPath","kind":"function"}
 {"path":"src/util.js","name":"walkDir","kind":"function"}
 {"path":"src/util.js","name":"detectLanguages","kind":"function"}
 {"path":"src/util.js","name":"detectFramework","kind":"function"}

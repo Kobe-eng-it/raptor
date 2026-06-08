@@ -25,3 +25,8 @@ Review this file before non-trivial work when the current request matches past m
 - Lesson: Task plans for skill workflows must explicitly cover error, unsupported-option, and evidence-threshold acceptance criteria, not only the happy path
 - Guardrail: Before opening task review, compare each task's Requirements and covers lists against all acceptance criteria including unwanted behavior and threshold rules
 
+### 2026-06-08T15:56:18Z | doc-builder-integration | execute
+- Trigger: Generated Raptor wiki included a private docs/roadmap note and a parallel review/validate read intermediate page state
+- Lesson: Generated knowledge refresh must exclude private planning folders and stateful review/validate commands must run sequentially
+- Guardrail: Before committing generated wiki exports, scan diffs for private target/project terms and run build, review, and validate in sequence
+

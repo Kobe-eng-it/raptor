@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:09.921Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.177Z
 sources:
   - package.json
   - bin/raptor.js
@@ -51,8 +51,8 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:10.130Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.249Z
 sources:
   - README.md
   - docs/api.md
@@ -87,8 +87,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:09.986Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.203Z
 sources:
   - bin/raptor.js
 source_hashes:
@@ -112,8 +112,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:09.761Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.157Z
 sources:
   - package.json
   - README.md
@@ -137,8 +137,8 @@ CLI for AI-driven codebase documentation generation
 
 ## Stack
 
-- JavaScript: 12 files (52%)
-- Markdown: 8 files (35%)
+- JavaScript: 12 files (50%)
+- Markdown: 9 files (38%)
 - JSON: 1 files (4%)
 - PowerShell: 1 files (4%)
 - Shell: 1 files (4%)
@@ -156,12 +156,12 @@ None detected.
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:10.024Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.210Z
 sources:
   - test/wiki.test.js
 source_hashes:
-  test/wiki.test.js: 64edc43aa78f2ca7
+  test/wiki.test.js: c7140064dc142d4d
 confidence: medium
 ---
 
@@ -195,8 +195,8 @@ Detected 6 route(s).
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:10.059Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.219Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -218,11 +218,11 @@ source_hashes:
   src/git.js: dd6e162228aac497
   src/routes.js: d8d9a24027d71ae3
   src/symbols.js: 3eb92f85261b3da5
-  src/util.js: baaf733a6b4510dc
+  src/util.js: 584d1e1f1a6f4da0
   src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: 64edc43aa78f2ca7
+  test/wiki.test.js: c7140064dc142d4d
 confidence: medium
 ---
 
@@ -314,6 +314,7 @@ confidence: medium
 
 ### src/util.js
 
+- `shouldIgnoreRelPath` (function)
 - `walkDir` (function)
 - `detectLanguages` (function)
 - `detectFramework` (function)
@@ -435,8 +436,8 @@ confidence: medium
 
 ---
 status: draft
-source_commit: 17e8ea2fc390604d42a1f4babaff374017cb9755
-last_generated: 2026-06-08T14:09:09.957Z
+source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
+last_generated: 2026-06-08T15:55:22.190Z
 sources:
   - package.json
   - bin/raptor.js

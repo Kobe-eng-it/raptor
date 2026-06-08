@@ -617,6 +617,31 @@ test('raptor skill instructs agents to use answer-pack for procedural questions'
   assert.ok(skill.includes('If the inspected route/source files do not contain a POST/create/register flow, state that explicitly in `Limiti`'));
 });
 
+test('doc-builder skill requires evidence-first drafting and gated document writes', () => {
+  const skill = fs.readFileSync(path.join(__dirname, '..', 'skill', 'doc-builder', 'SKILL.md'), 'utf8');
+
+  assert.ok(skill.includes('raptor answer-pack "<question>" "<target-path>" --json'));
+  assert.ok(skill.includes('Before drafting document content'));
+  assert.ok(skill.includes('inspect at least the first three distinct evidence files'));
+  assert.ok(skill.includes('If `.raptor/index/chunks.jsonl` is missing'));
+  assert.ok(skill.includes('default to `functional document`'));
+  assert.ok(skill.includes('If the requested document type is unsupported, ask the user to choose one supported document type'));
+  assert.ok(skill.includes('If the proposed document has more than three sections, present the outline and wait for explicit outline approval'));
+  assert.ok(skill.includes('If the user changes document type, regenerate the outline'));
+  assert.ok(skill.includes('If the user changes language, regenerate the outline'));
+  assert.ok(skill.includes('For low confidence, diagnose likely causes before drafting'));
+  assert.ok(skill.includes('produce an evidence-insufficiency brief instead of a full document'));
+  assert.ok(skill.includes('a behavioral claim requires at least one verified route, controller, service, entrypoint, command, component, or equivalent workflow boundary'));
+  assert.ok(skill.includes('Do not claim a complete workflow unless the inspected evidence shows'));
+  assert.ok(skill.includes('Draft documents go under `.raptor/docs/` in the target codebase'));
+  assert.ok(skill.includes('Final documents go under `docs/` in the target codebase only after explicit final publication approval'));
+  assert.ok(skill.includes('If the user has not approved writing to `docs/`, do not write generated content to `docs/`'));
+  assert.ok(skill.includes('Written documents must include source evidence, assumptions, and limits'));
+  assert.ok(skill.includes('Do not copy private target-project details into the public Raptor repository'));
+  assert.ok(skill.includes('Do not add an MCP server in this increment'));
+  assert.ok(skill.includes('Do not add embeddings or semantic reranking in this increment'));
+});
+
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
   assert.deepEqual(tokenize('Come si crea un utenza?'), ['crea', 'utenza']);
@@ -645,6 +670,19 @@ test('walkDir handles wide directories without spreading into push arguments', (
   } finally {
     fs.readdirSync = originalReaddirSync;
   }
+});
+
+test('walkDir excludes private roadmap notes from generated project knowledge', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'raptor-private-roadmap-'));
+  fs.mkdirSync(path.join(dir, 'docs', 'roadmap'), { recursive: true });
+  fs.mkdirSync(path.join(dir, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'docs', 'public.md'), 'public documentation\n', 'utf8');
+  fs.writeFileSync(path.join(dir, 'docs', 'roadmap', 'private.md'), 'private plan\n', 'utf8');
+
+  const relFiles = walkDir(dir).map(file => path.relative(dir, file).split(path.sep).join('/'));
+
+  assert.ok(relFiles.includes('docs/public.md'));
+  assert.ok(!relFiles.includes('docs/roadmap/private.md'));
 });
 
 test('discoverWorkspaces finds nested manifests and keeps invalid package warnings', () => {

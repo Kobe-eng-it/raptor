@@ -19,6 +19,10 @@ const IGNORE_EXTS = new Set([
   '.lock', '.sum',
 ]);
 
+const IGNORE_REL_DIRS = new Set([
+  'docs/roadmap',
+]);
+
 const LANG_MAP = {
   '.ts': 'TypeScript', '.tsx': 'TypeScript',
   '.js': 'JavaScript', '.jsx': 'JavaScript', '.mjs': 'JavaScript', '.cjs': 'JavaScript',
@@ -69,7 +73,12 @@ const FRAMEWORK_HINTS = {
   'build.gradle': 'Gradle',
 };
 
-function walkDir(dir, maxDepth = 8, depth = 0) {
+function shouldIgnoreRelPath(fullPath, rootPath) {
+  const rel = path.relative(rootPath, fullPath).split(path.sep).join('/');
+  return IGNORE_REL_DIRS.has(rel);
+}
+
+function walkDir(dir, maxDepth = 8, depth = 0, rootPath = dir) {
   const results = [];
   if (depth > maxDepth) return results;
   let entries;
@@ -82,8 +91,9 @@ function walkDir(dir, maxDepth = 8, depth = 0) {
     if (entry.name.startsWith('.') && entry.name !== '.env.example') continue;
     if (IGNORE_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory() && shouldIgnoreRelPath(fullPath, rootPath)) continue;
     if (entry.isDirectory()) {
-      for (const nestedPath of walkDir(fullPath, maxDepth, depth + 1)) {
+      for (const nestedPath of walkDir(fullPath, maxDepth, depth + 1, rootPath)) {
         results.push(nestedPath);
       }
     } else if (entry.isFile()) {
