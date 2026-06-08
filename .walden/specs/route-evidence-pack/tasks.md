@@ -1,7 +1,7 @@
 ---
 status: approved
 approved_at: 2026-06-08T07:26:44Z
-last_modified: 2026-06-08T10:46:51Z
+last_modified: 2026-06-08T10:52:45Z
 source_design_approved_at: 2026-06-08T07:24:06Z
 ---
 
@@ -68,7 +68,7 @@ source_design_approved_at: 2026-06-08T07:24:06Z
         covers: ["R4.AC1", "R4.AC4"]
 
 - [ ] 5. Update agent workflow and generated project knowledge
-  - [ ] 5.1 Update `skill/raptor/SKILL.md` to use `raptor answer-pack` for procedural questions
+  - [x] 5.1 Update `skill/raptor/SKILL.md` to use `raptor answer-pack` for procedural questions
     - Requirements: `R6.AC1`, `R6.AC2`, `R6.AC3`
     - Design: Raptor Skill
     - Verification:

@@ -125,28 +125,37 @@ raptor query "<question>" "<target-path>"
 
 Use non-JSON output for user-facing answers because it surfaces the best match and source paths directly.
 
-For procedural, diagnostic, or implementation questions, use JSON output and inspect sources before answering. Procedural questions often start with words such as "how", "come", "where", "dove", "why", "perche", "what calls", "come si crea", "come funziona", or "dove viene gestito".
+For procedural, diagnostic, or implementation questions, use `answer-pack` before manual grep-style exploration. Procedural questions often start with words such as "how", "come", "where", "dove", "why", "perche", "what calls", "come si crea", "come funziona", or "dove viene gestito".
 
 ```bash
-raptor query "<question>" "<target-path>" --json
+raptor answer-pack "<question>" "<target-path>" --json
 ```
 
-Use the returned pages, excerpts, symbols, sources, and warnings as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
+Use the returned `wiki_results`, `routes`, `symbols`, `sources`, `confidence`, and `warnings` as grounded context. If `.raptor/index/chunks.jsonl` is missing, run `raptor wiki build --json` first.
+
+Use `raptor query "<question>" "<target-path>" --json` as fallback when:
+
+- `answer-pack` reports low confidence and the user needs broader wiki search;
+- you need more wiki page excerpts than the bounded answer pack includes;
+- you are checking a quick lookup that does not need source snippets.
 
 ### Source-Grounded Answer Workflow
 
 For questions such as "Come si crea un'utenza?", do not stop at the Raptor query result. Use this workflow:
 
-1. Run `raptor query "<question>" "<target-path>" --json`.
-2. Read the top returned wiki page under `.raptor/wiki/`.
-3. Read the top 3-5 source paths from `result.symbols[].path` and `result.results[].sources`, preferring symbol paths first.
-4. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
-5. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run a second Raptor query before answering:
+1. Run `raptor answer-pack "<question>" "<target-path>" --json` before manual grep-style exploration.
+2. If `result.confidence` is `low`, state the limitation before proposing a workflow and treat the answer as incomplete evidence.
+3. Read the top bounded snippets from `result.sources[]`, preserving their order.
+4. If `result.routes[]` is non-empty, cite route files in `File verificati` and include method, route path, handler, and line when available.
+5. Read the top returned wiki page under `.raptor/wiki/` when `result.wiki_results[]` indicates a relevant page.
+6. Read the top source paths from `result.symbols[].path` and `result.sources[].path`, preferring route source paths first.
+7. If the top source is a service, controller, route, command, or component, search nearby files for callers, route declarations, imports, or API endpoints before answering.
+8. If the inspected files only show frontend authentication, token handling, roles, or an external identity provider, run follow-up Raptor queries before answering:
    - `raptor query "backend endpoint create user account role keycloak" "<target-path>" --json`
    - `raptor query "API create user account role" "<target-path>" --json`
    - use the user's domain words too, for example `utenza`, `utente`, `ruolo`, `profilo`.
-6. Read any backend/controller/service/config files returned by the second query, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
-7. Answer in the user's language with:
+9. Read any backend/controller/service/config files returned by the follow-up queries, especially files that mention `POST`, `create`, `user`, `role`, `Keycloak`, `OAuth`, `issuer`, or route decorators.
+10. Answer in the user's language with:
    - the shortest procedural explanation that fits the evidence;
    - the key files and symbols involved;
    - any endpoint, command, method, or component names found;

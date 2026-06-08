@@ -560,6 +560,15 @@ test('CLI exposes answer-pack command and returns JSON bundle', () => {
   assert.equal(result.result.sources[0].path, 'backend/src/UserController.java');
 });
 
+test('raptor skill instructs agents to use answer-pack for procedural questions', () => {
+  const skill = fs.readFileSync(path.join(__dirname, '..', 'skill', 'raptor', 'SKILL.md'), 'utf8');
+
+  assert.ok(skill.includes('raptor answer-pack "<question>" "<target-path>" --json'));
+  assert.ok(skill.includes('before manual grep-style exploration'));
+  assert.ok(skill.includes('If `result.confidence` is `low`, state the limitation before proposing a workflow'));
+  assert.ok(skill.includes('If `result.routes[]` is non-empty, cite route files in `File verificati`'));
+});
+
 test('query tokenizer removes generic question words', () => {
   assert.deepEqual(tokenize('where is the CLI entrypoint?'), ['cli', 'entrypoint']);
   assert.deepEqual(tokenize('Come si crea un utenza?'), ['crea', 'utenza']);
