@@ -87,6 +87,8 @@ Before drafting document content, run:
 raptor answer-pack "<question>" "<target-path>" --json
 ```
 
+In the answer, explicitly report that `raptor answer-pack "<question>" "<target-path>" --json` was run. If `raptor answer-pack` was not run successfully, do not draft an outline or document; explain the blocker and run `raptor wiki build "<target-path>" --json` when the index is missing.
+
 If `.raptor/index/chunks.jsonl` is missing, run or request:
 
 ```bash
@@ -144,6 +146,8 @@ If evidence remains low after diagnosis, produce an evidence-insufficiency brief
 Create an outline before long-form drafting.
 
 If the proposed document has more than three sections, present the outline and wait for explicit outline approval before drafting section content. Do not treat silence as approval.
+
+This is a hard gate: when the outline has more than three sections, the response SHALL stop after the outline, verified files, assumptions, limits, and the approval question. It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response.
 
 If the proposed document has three sections or fewer, direct draft generation is allowed without a separate outline approval gate.
 
@@ -244,6 +248,8 @@ Indice proposto:
 5. Problemi comuni
 6. Evidenza tecnica e limiti
 ```
+
+For user manuals and user guides with more than three sections, stop here and ask for approval. Do not draft `Guida rapida`, `Flussi utente`, `Problemi comuni`, or technical appendix content until the user explicitly approves the outline.
 
 ### Evidence-Insufficiency Brief
 

@@ -622,6 +622,8 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
 
   assert.ok(skill.includes('raptor answer-pack "<question>" "<target-path>" --json'));
   assert.ok(skill.includes('Before drafting document content'));
+  assert.ok(skill.includes('explicitly report that `raptor answer-pack "<question>" "<target-path>" --json` was run'));
+  assert.ok(skill.includes('If `raptor answer-pack` was not run successfully, do not draft an outline or document'));
   assert.ok(skill.includes('inspect at least the first three distinct evidence files'));
   assert.ok(skill.includes('If `.raptor/index/chunks.jsonl` is missing'));
   assert.ok(skill.includes('default to `functional document`'));
@@ -629,6 +631,8 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
   assert.ok(skill.includes('Requests such as "manuale utente", "guida utente", "come usare l\'applicazione", "istruzioni utente", or "user manual" SHALL use `user workflow notes`'));
   assert.ok(skill.includes('Only use `functional document` as the fallback when no stronger document-type signal is present'));
   assert.ok(skill.includes('If the proposed document has more than three sections, present the outline and wait for explicit outline approval'));
+  assert.ok(skill.includes('This is a hard gate: when the outline has more than three sections'));
+  assert.ok(skill.includes('It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response'));
   assert.ok(skill.includes('If the user changes document type, regenerate the outline'));
   assert.ok(skill.includes('If the user changes language, regenerate the outline'));
   assert.ok(skill.includes('For low confidence, diagnose likely causes before drafting'));
@@ -641,6 +645,8 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
   assert.ok(skill.includes('Written documents must include source evidence, assumptions, and limits'));
   assert.ok(skill.includes('For `user workflow notes`, user manuals, and user guides'));
   assert.ok(skill.includes('Write the main sections around user goals, screens, actions, outcomes, and troubleshooting'));
+  assert.ok(skill.includes('For user manuals and user guides with more than three sections, stop here and ask for approval'));
+  assert.ok(skill.includes('Do not draft `Guida rapida`, `Flussi utente`, `Problemi comuni`, or technical appendix content until the user explicitly approves the outline'));
   assert.ok(skill.includes('Keep code symbols, JWT details, controller names, route handlers, and provider internals out of the main user flow'));
   assert.ok(skill.includes('Put technical findings in `Evidenza tecnica` or `Limiti`, after the user-facing content'));
   assert.ok(skill.includes('Do not copy private target-project details into the public Raptor repository'));

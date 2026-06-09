@@ -1,7 +1,7 @@
 ---
 status: reviewed
-source_commit: 652c4c920c9d0be90dbdb47434b5e211260e1ac7
-last_generated: 2026-06-09T07:28:49.750Z
+source_commit: 22a57896f0a2741543462e908dfc462203399b39
+last_generated: 2026-06-09T08:04:38.438Z
 sources:
   - README.md
   - docs/api.md
