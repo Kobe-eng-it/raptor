@@ -1,11 +1,11 @@
 ---
 status: reviewed
-source_commit: 9dd45e71d7de4818fd3b974a5779b37f3c5e6f96
-last_generated: 2026-06-08T15:55:22.210Z
+source_commit: 652c4c920c9d0be90dbdb47434b5e211260e1ac7
+last_generated: 2026-06-09T07:28:49.715Z
 sources:
   - test/wiki.test.js
 source_hashes:
-  test/wiki.test.js: c7140064dc142d4d
+  test/wiki.test.js: d4319c3b2dfbe863
 confidence: medium
 ---
 

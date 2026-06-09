@@ -32,6 +32,14 @@ Supported document types:
 
 When the user explicitly names a document type, use that type. When the user does not name a document type, default to `functional document`. If the requested document type is unsupported, ask the user to choose one supported document type before continuing.
 
+Map user-facing requests before applying the default:
+
+- Requests such as "manuale utente", "guida utente", "come usare l'applicazione", "istruzioni utente", or "user manual" SHALL use `user workflow notes`.
+- Requests for verification strategy, collaudo, casi di prova, or test scenarios SHALL use `test plan` or `test cases`, based on the user's wording.
+- Requests for endpoints, payloads, API behavior, or integration notes SHALL use `API notes`.
+- Requests for architecture, implementation, internals, or source-code behavior SHALL use `technical document`.
+- Only use `functional document` as the fallback when no stronger document-type signal is present.
+
 ## Prerequisites
 
 The `raptor` CLI must be installed and available in `PATH`.
@@ -62,6 +70,7 @@ npx raptor-docgen doctor
 2. Identify the user's document goal.
 3. Determine document type:
    - use the explicit type if provided;
+   - map user-facing guide/manual requests to `user workflow notes`;
    - otherwise default to `functional document`.
 4. Determine language:
    - use the explicit language if provided;
@@ -167,6 +176,14 @@ For each behavioral claim, cite the supporting file path. Include route method, 
 
 Keep user-facing prose concise. Prefer clear tables or numbered procedures when the document type benefits from them.
 
+For `user workflow notes`, user manuals, and user guides:
+
+- Write the main sections around user goals, screens, actions, outcomes, and troubleshooting.
+- Keep code symbols, JWT details, controller names, route handlers, and provider internals out of the main user flow unless the user explicitly asks for technical detail.
+- Put technical findings in `Evidenza tecnica` or `Limiti`, after the user-facing content.
+- Prefer labels such as `Accesso`, `Ricerca documenti`, `Consultazione dettaglio`, `Download`, `Permessi`, and `Problemi comuni` over implementation labels such as `Security.java`, `Profile.apply`, `JWT`, or controller method names.
+- If evidence is mostly technical, translate it into cautious user-facing behavior and cite the files only in the evidence sections.
+
 ### Phase 6 - Write Only After Approval
 
 Writing is separate from drafting. Do not write generated content to disk unless the user explicitly asks to save it.
@@ -216,6 +233,18 @@ Limiti:
 
 If the outline has more than three sections, end with a direct request for approval before drafting.
 
+For a user manual or guide, the outline should lead with user-facing chapters before technical evidence, for example:
+
+```text
+Indice proposto:
+1. Accesso all'applicazione
+2. Navigazione principale
+3. Ricerca e consultazione documenti
+4. Operazioni disponibili per ruolo
+5. Problemi comuni
+6. Evidenza tecnica e limiti
+```
+
 ### Evidence-Insufficiency Brief
 
 ```text
@@ -239,9 +268,17 @@ Prossimo passo consigliato:
 
 ## Scopo
 
+## Guida rapida
+
+## Flussi utente
+
+## Problemi comuni
+
 ## File verificati
 
 ## Evidenza
+
+## Evidenza tecnica
 
 ## Assunzioni
 
