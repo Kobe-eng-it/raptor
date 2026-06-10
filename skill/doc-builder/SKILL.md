@@ -149,6 +149,10 @@ If the proposed document has more than three sections, present the outline and w
 
 This is a hard gate: when the outline has more than three sections, the response SHALL stop after the outline, verified files, assumptions, limits, and the approval question. It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response.
 
+Never ask for outline approval unless the full proposed outline is visible in the same assistant message. Do not use a separate approval prompt that hides the outline from the user.
+
+After the user explicitly approves the outline, proceed directly to drafting the document. Do not ask a second confirmation such as "confermi di procedere con la stesura?" unless the user changes scope, language, document type, or evidence requirements during approval.
+
 Keep an explicit approval state:
 
 - `outline_approved: false` until the user explicitly approves the outline.

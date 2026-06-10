@@ -633,6 +633,9 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
   assert.ok(skill.includes('If the proposed document has more than three sections, present the outline and wait for explicit outline approval'));
   assert.ok(skill.includes('This is a hard gate: when the outline has more than three sections'));
   assert.ok(skill.includes('It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response'));
+  assert.ok(skill.includes('Never ask for outline approval unless the full proposed outline is visible in the same assistant message'));
+  assert.ok(skill.includes('After the user explicitly approves the outline, proceed directly to drafting the document'));
+  assert.ok(skill.includes('Do not ask a second confirmation such as "confermi di procedere con la stesura?"'));
   assert.ok(skill.includes('Keep an explicit approval state'));
   assert.ok(skill.includes('Do not ask whether to save a draft while `outline_approved: false` or `draft_created: false`'));
   assert.ok(skill.includes('A request such as "preparare un manuale" means prepare the evidence and outline first; it does not imply save approval'));

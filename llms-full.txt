@@ -6,8 +6,8 @@ This file concatenates the local `.raptor/wiki` pages for tools that prefer a si
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.764Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.617Z
 sources:
   - package.json
   - bin/raptor.js
@@ -51,8 +51,8 @@ Raptor inferred the architecture from local source files, package metadata, entr
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.778Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.630Z
 sources:
   - README.md
   - docs/api.md
@@ -87,8 +87,8 @@ confidence: high
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.769Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.621Z
 sources:
   - bin/raptor.js
 source_hashes:
@@ -112,8 +112,8 @@ These files are likely startup, command-line, or application entrypoints based o
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.758Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.611Z
 sources:
   - package.json
   - README.md
@@ -156,12 +156,12 @@ None detected.
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.771Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.623Z
 sources:
   - test/wiki.test.js
 source_hashes:
-  test/wiki.test.js: a7310f5053777ecf
+  test/wiki.test.js: a9a0ca76fce6ec1e
 confidence: medium
 ---
 
@@ -195,8 +195,8 @@ Detected 6 route(s).
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.772Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.624Z
 sources:
   - src/analyze.js
   - src/answerPack.js
@@ -222,7 +222,7 @@ source_hashes:
   src/wiki.js: 874aae567706c06f
   src/workspaces.js: 6eee97da965c9081
   src/write.js: 5a50000107c48217
-  test/wiki.test.js: a7310f5053777ecf
+  test/wiki.test.js: a9a0ca76fce6ec1e
 confidence: medium
 ---
 
@@ -436,8 +436,8 @@ confidence: medium
 
 ---
 status: draft
-source_commit: 41dfc8ffce28ca79fd1e909c1ea85ad9aea619df
-last_generated: 2026-06-10T09:13:18.766Z
+source_commit: 94212e79699cdc713a3de7b7284afffffd4bddfa
+last_generated: 2026-06-10T09:22:48.619Z
 sources:
   - package.json
   - bin/raptor.js
