@@ -633,6 +633,9 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
   assert.ok(skill.includes('If the proposed document has more than three sections, present the outline and wait for explicit outline approval'));
   assert.ok(skill.includes('This is a hard gate: when the outline has more than three sections'));
   assert.ok(skill.includes('It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response'));
+  assert.ok(skill.includes('Keep an explicit approval state'));
+  assert.ok(skill.includes('Do not ask whether to save a draft while `outline_approved: false` or `draft_created: false`'));
+  assert.ok(skill.includes('A request such as "preparare un manuale" means prepare the evidence and outline first; it does not imply save approval'));
   assert.ok(skill.includes('If the user changes document type, regenerate the outline'));
   assert.ok(skill.includes('If the user changes language, regenerate the outline'));
   assert.ok(skill.includes('For low confidence, diagnose likely causes before drafting'));
@@ -640,9 +643,11 @@ test('doc-builder skill requires evidence-first drafting and gated document writ
   assert.ok(skill.includes('a behavioral claim requires at least one verified route, controller, service, entrypoint, command, component, or equivalent workflow boundary'));
   assert.ok(skill.includes('Do not claim a complete workflow unless the inspected evidence shows'));
   assert.ok(skill.includes('Draft documents go under `.raptor/docs/` in the target codebase'));
+  assert.ok(skill.includes('Before writing a draft file, create `.raptor/docs/` if it does not exist'));
   assert.ok(skill.includes('Final documents go under `docs/` in the target codebase only after explicit final publication approval'));
   assert.ok(skill.includes('If the user has not approved writing to `docs/`, do not write generated content to `docs/`'));
   assert.ok(skill.includes('Written documents must include source evidence, assumptions, and limits'));
+  assert.ok(skill.includes('When reporting a written file, report the exact absolute path returned by the filesystem'));
   assert.ok(skill.includes('For `user workflow notes`, user manuals, and user guides'));
   assert.ok(skill.includes('Write the main sections around user goals, screens, actions, outcomes, and troubleshooting'));
   assert.ok(skill.includes('For user manuals and user guides with more than three sections, stop here and ask for approval'));

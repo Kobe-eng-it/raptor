@@ -149,6 +149,14 @@ If the proposed document has more than three sections, present the outline and w
 
 This is a hard gate: when the outline has more than three sections, the response SHALL stop after the outline, verified files, assumptions, limits, and the approval question. It SHALL NOT include drafted sections, procedures, troubleshooting content, or appendix content in the same response.
 
+Keep an explicit approval state:
+
+- `outline_approved: false` until the user explicitly approves the outline.
+- `draft_created: false` until a draft is actually produced after outline approval.
+- `save_requested: false` unless the user explicitly asks to save after a draft exists.
+
+Do not ask whether to save a draft while `outline_approved: false` or `draft_created: false`. A request such as "preparare un manuale" means prepare the evidence and outline first; it does not imply save approval.
+
 If the proposed document has three sections or fewer, direct draft generation is allowed without a separate outline approval gate.
 
 During outline review, tell the user they can change:
@@ -192,9 +200,16 @@ For `user workflow notes`, user manuals, and user guides:
 
 Writing is separate from drafting. Do not write generated content to disk unless the user explicitly asks to save it.
 
+Before writing, verify all of these are true:
+
+- the outline was approved when the document has more than three sections;
+- the draft was already generated;
+- the user explicitly asked to save that draft.
+
 Use these storage rules:
 
 - Draft documents go under `.raptor/docs/` in the target codebase.
+- Before writing a draft file, create `.raptor/docs/` if it does not exist.
 - Final documents go under `docs/` in the target codebase only after explicit final publication approval.
 - If the user has not approved writing to `docs/`, do not write generated content to `docs/`.
 - If the user asks to save a draft but does not name a filename, create a concise kebab-case filename under `.raptor/docs/`.
@@ -210,6 +225,8 @@ When writing a generated document to disk, include:
 - whether each workflow is complete, partial, or inferred.
 
 Use the target codebase as the path root. Preserve Windows paths by using native filesystem APIs or literal paths when available, and avoid shell-built paths for writes. Do not write generated target-project documents into the Raptor repository unless the target path is the Raptor repository itself.
+
+When reporting a written file, report the exact absolute path returned by the filesystem. If the parent directory is missing, create it and retry once before reporting failure.
 
 ## Required Output Shapes
 
